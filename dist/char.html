@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>田字格练字表 - 汉字</title>
+    <style>
+        body {
+            font-family: 'SimSun', serif;
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .title {
+            text-align: center;
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .char-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .pinyin {
+            font-size: 26px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: bold;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .tianzi-grid {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #4CAF50;
+            position: relative;
+            background: white;
+            background-image: 
+                linear-gradient(to right, transparent 39px, #81C784 39px, #81C784 41px, transparent 41px),
+                linear-gradient(to bottom, transparent 39px, #81C784 39px, #81C784 41px, transparent 41px);
+        }
+        
+        .character {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1;
+        }
+        
+        @media (max-width: 1000px) {
+            .grid-container {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+        
+        @media (max-width: 800px) {
+            .grid-container {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .tianzi-grid {
+                width: 70px;
+                height: 70px;
+                background-image: 
+                    linear-gradient(to right, transparent 34px, #81C784 34px, #81C784 36px, transparent 36px),
+                    linear-gradient(to bottom, transparent 34px, #81C784 34px, #81C784 36px, transparent 36px);
+            }
+            .character {
+                font-size: 35px;
+            }
+            .pinyin {
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .tianzi-grid {
+                width: 60px;
+                height: 60px;
+                background-image: 
+                    linear-gradient(to right, transparent 29px, #81C784 29px, #81C784 31px, transparent 31px),
+                    linear-gradient(to bottom, transparent 29px, #81C784 29px, #81C784 31px, transparent 31px);
+            }
+            .character {
+                font-size: 30px;
+            }
+            .pinyin {
+                font-size: 12px;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">田字格练字表 - <span id="totalCount"></span>个汉字</div>
+        <div class="grid-container" id="gridContainer"></div>
+    </div>
+
+    <script>
+        // 汉字和拼音数据数组
+        const characters = [
+            { char: '两', pinyin: 'liǎng' },
+            { char: '只', pinyin: 'zhī' },
+            { char: '头', pinyin: 'tóu' },
+            { char: '了', pinyin: 'le' },
+            { char: '不', pinyin: 'bù' },
+            { char: '大', pinyin: 'dà' },
+            { char: '小', pinyin: 'xiǎo' },
+            { char: '上', pinyin: 'shàng' },
+            { char: '下', pinyin: 'xià' },
+            { char: '少', pinyin: 'shǎo' },
+            { char: '白', pinyin: 'bái' },
+            { char: '天', pinyin: 'tiān' },
+            { char: '亮', pinyin: 'liàng' },
+            { char: '星', pinyin: 'xīng' },
+            { char: '花', pinyin: 'huā' },
+            { char: '草', pinyin: 'cǎo' },
+            { char: '树', pinyin: 'shù' },
+            { char: '地', pinyin: 'dì' },
+            { char: '看', pinyin: 'kàn' },
+            { char: '走', pinyin: 'zǒu' },
+            { char: '笑', pinyin: 'xiào' },
+            { char: '来', pinyin: 'lái' },
+            { char: '是', pinyin: 'shì' },
+            { char: '快', pinyin: 'kuài' },
+            { char: '好', pinyin: 'hǎo' },
+            { char: '爸', pinyin: 'bà' },
+            { char: '妈', pinyin: 'mā' },
+            { char: '我', pinyin: 'wǒ' },
+            { char: '个', pinyin: 'gè' },
+            { char: '中', pinyin: 'zhōng' },
+            { char: '什', pinyin: 'shén' },
+            { char: '么', pinyin: 'me' },
+            { char: '开', pinyin: 'kāi' },
+            { char: '可', pinyin: 'kě' },
+            { char: '去', pinyin: 'qù' },
+            { char: '里', pinyin: 'lǐ' },
+            { char: '家', pinyin: 'jiā' },
+            { char: '爷', pinyin: 'yé' },
+            { char: '奶', pinyin: 'nǎi' },
+            { char: '饭', pinyin: 'fàn' },
+            { char: '有', pinyin: 'yǒu' },
+            { char: '找', pinyin: 'zhǎo' },
+            { char: '坐', pinyin: 'zuò' },
+            { char: '听', pinyin: 'tīng' },
+            { char: '玩', pinyin: 'wán' },
+            { char: '起', pinyin: 'qǐ' },
+            { char: '到', pinyin: 'dào' },
+            { char: '海', pinyin: 'hǎi' },
+            { char: '风', pinyin: 'fēng' },
+            { char: '雪', pinyin: 'xuě' },
+            { char: '春', pinyin: 'chūn' },
+            { char: '夏', pinyin: 'xià' },
+            { char: '秋', pinyin: 'qiū' },
+            { char: '冬', pinyin: 'dōng' },
+            { char: '猫', pinyin: 'māo' },
+            { char: '狗', pinyin: 'gǒu' },
+            { char: '睡', pinyin: 'shuì' },
+            { char: '见', pinyin: 'jiàn' },
+            { char: '早', pinyin: 'zǎo' },
+            { char: '叶', pinyin: 'yè' },
+            { char: '森', pinyin: 'sēn' },
+            { char: '林', pinyin: 'lín' },
+            { char: '书', pinyin: 'shū' },
+            { char: '画', pinyin: 'huà' },
+            { char: '对', pinyin: 'duì' },
+            { char: '没', pinyin: 'méi' },
+            { char: '师', pinyin: 'shī' },
+            { char: '他', pinyin: 'tā' },
+            { char: '们', pinyin: 'men' },
+            { char: '前', pinyin: 'qián' },
+            { char: '后', pinyin: 'hòu' },
+            { char: '哥', pinyin: 'gē' },
+            { char: '姐', pinyin: 'jiě' },
+            { char: '弟', pinyin: 'dì' },
+            { char: '妹', pinyin: 'mèi' },
+            { char: '红', pinyin: 'hóng' },
+            { char: '蓝', pinyin: 'lán' },
+            { char: '绿', pinyin: 'lù' },
+            { char: '美', pinyin: 'měi' },
+            { char: '丽', pinyin: 'lì' },
+            { char: '浪', pinyin: 'làng' },
+            { char: '抱', pinyin: 'bào' },
+            { char: '公', pinyin: 'gōng' },
+            { char: '国', pinyin: 'guó' },
+            { char: '衣', pinyin: 'yī' },
+            { char: '服', pinyin: 'fú' },
+            { char: '校', pinyin: 'xiào' },
+            { char: '爬', pinyin: 'pá' },
+            { char: '打', pinyin: 'dǎ' },
+            { char: '穿', pinyin: 'chuān' },
+            { char: '要', pinyin: 'yào' },
+            { char: '黄', pinyin: 'huáng' },
+            { char: '很', pinyin: 'hěn' },
+            { char: '把', pinyin: 'bǎ' },
+            { char: '和', pinyin: 'hé' },
+            { char: '吧', pinyin: 'ba' },
+            { char: '得', pinyin: 'de' },
+            { char: '着', pinyin: 'zhe' },
+            { char: '加', pinyin: 'jiā' },
+            { char: '给', pinyin: 'gěi' },
+            { char: '发', pinyin: 'fā' },
+            { char: '己', pinyin: 'jǐ' },
+            { char: '今', pinyin: 'jīn' },
+            { char: '年', pinyin: 'nián' },
+            { char: '包', pinyin: 'bāo' },
+            { char: '点', pinyin: 'diǎn' },
+            { char: '孩', pinyin: 'hái' },
+            { char: '为', pinyin: 'wèi' },
+            { char: '比', pinyin: 'bǐ' },
+            { char: '站', pinyin: 'zhàn' },
+            { char: '过', pinyin: 'guò' },
+            { char: '关', pinyin: 'guān' },
+            { char: '进', pinyin: 'jìn' },
+            { char: '真', pinyin: 'zhēn' },
+            { char: '错', pinyin: 'cuò' },
+            { char: '东', pinyin: 'dōng' },
+            { char: '西', pinyin: 'xī' }
+        ];
+
+        // 创建田字格元素的函数
+        function createCharBox(charData) {
+            // 创建主容器
+            const charBox = document.createElement('div');
+            charBox.className = 'char-box';
+
+            // 创建拼音元素
+            const pinyinDiv = document.createElement('div');
+            pinyinDiv.className = 'pinyin';
+            pinyinDiv.textContent = charData.pinyin;
+
+            // 创建田字格容器
+            const tianziGrid = document.createElement('div');
+            tianziGrid.className = 'tianzi-grid';
+
+            // 创建汉字元素
+            const characterDiv = document.createElement('div');
+            characterDiv.className = 'character';
+            characterDiv.textContent = charData.char;
+
+            // 组装元素
+            tianziGrid.appendChild(characterDiv);
+            charBox.appendChild(pinyinDiv);
+            charBox.appendChild(tianziGrid);
+
+            return charBox;
+        }
+
+        // 生成所有田字格
+        function generateGrid() {
+            const gridContainer = document.getElementById('gridContainer');
+            const totalCountSpan = document.getElementById('totalCount');
+            
+            // 更新总数
+            totalCountSpan.textContent = characters.length;
+            
+            // 清空容器
+            gridContainer.innerHTML = '';
+            
+            // 循环生成每个字的田字格
+            characters.forEach(charData => {
+                const charBox = createCharBox(charData);
+                gridContainer.appendChild(charBox);
+            });
+        }
+
+        // 页面加载完成后生成田字格
+        document.addEventListener('DOMContentLoaded', function() {
+            generateGrid();
+        });
+
+        // 可选：添加一些交互功能
+        function addInteraction() {
+            const gridContainer = document.getElementById('gridContainer');
+            
+            gridContainer.addEventListener('click', function(e) {
+                const charBox = e.target.closest('.char-box');
+                if (charBox) {
+                    // 点击高亮效果
+                    charBox.style.transform = 'scale(1.05)';
+                    charBox.style.transition = 'transform 0.2s';
+                    
+                    setTimeout(() => {
+                        charBox.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+        }
+
+        // 启用交互功能
+        document.addEventListener('DOMContentLoaded', function() {
+            generateGrid();
+            addInteraction();
+        });
+    </script>
+</body>
+</html>
