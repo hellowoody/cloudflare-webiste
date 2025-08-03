@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>汉字笔画查询器</title>
-    <script src="./lib/cnchar/cnchar.min.js"></script>
+    <!-- <script src="./lib/cnchar/cnchar.min.js"></script>
     <script src="./lib/cnchar/cnchar.poly.min.js"></script>
     <script src="./lib/cnchar/cnchar.order.min.js"></script>
     <script src="./lib/cnchar/cnchar.trad.min.js"></script>
@@ -19,8 +19,8 @@
     <script src="./lib/cnchar/cnchar.code.min.js"></script>
     <script src="./lib/cnchar/cnchar.input.min.js"></script>
     <script src="./lib/cnchar/cnchar.info.min.js"></script>
-    <script src="./lib/cnchar/cnchar.name.min.js"></script>
-    <!-- <script src="https://fastly.jsdelivr.net/npm/cnchar/cnchar.min.js"></script>
+    <script src="./lib/cnchar/cnchar.name.min.js"></script> -->
+    <script src="https://fastly.jsdelivr.net/npm/cnchar/cnchar.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-poly/cnchar.poly.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-order/cnchar.order.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-trad/cnchar.trad.min.js"></script>
@@ -35,7 +35,7 @@
     <script src="https://fastly.jsdelivr.net/npm/cnchar-code/cnchar.code.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-input/cnchar.input.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-info/cnchar.info.min.js"></script>
-    <script src="https://fastly.jsdelivr.net/npm/cnchar-name/cnchar.name.min.js"></script> -->
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-name/cnchar.name.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -318,7 +318,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">✨ 汉字笔画查询器</h1>
+        <h1 class="title">✨ 吴来了-汉字笔画查询器</h1>
         
         <div class="input-section">
             <div class="input-wrapper">
@@ -422,7 +422,7 @@
         
         function displayResult(result) {
             const resultsDiv = document.getElementById('results');
-            console.log(result)
+            // console.log(result)
             
             const resultCard = document.createElement('div');
             resultCard.className = 'result-card';
@@ -500,6 +500,22 @@
             }
             const arr = orderArray[0]
             return arr.map(letter => letter.shape);
+        }
+
+
+        // 获取当前页面的查询参数
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 判断是否存在参数 'char'
+        if (urlParams.has('char')) {
+            // console.log('URL 中包含参数 char');
+            // 可选：获取 char 的值
+            const charValue = urlParams.get('char');
+            // console.log('char 的值是:', charValue);
+            document.getElementById('charInput').value = charValue;
+            setTimeout(() => queryStrokes(),10)
+        } else {
+            // console.log('URL 中不包含参数 char');
         }
     </script>
 </body>

@@ -94,7 +94,7 @@
                     linear-gradient(to bottom, transparent 34px, #81C784 34px, #81C784 36px, transparent 36px);
             }
             .character {
-                font-size: 35px;
+                font-size: 50px;
             }
             .pinyin {
                 font-size: 14px;
@@ -113,7 +113,7 @@
                     linear-gradient(to bottom, transparent 29px, #81C784 29px, #81C784 31px, transparent 31px);
             }
             .character {
-                font-size: 30px;
+                font-size: 50px;
             }
             .pinyin {
                 font-size: 12px;
@@ -133,7 +133,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="title">田字格练字表 - <span id="totalCount"></span>个汉字</div>
+        <div class="title">吴来了田字格 - <span id="totalCount"></span>个汉字</div>
         <div class="grid-container" id="gridContainer"></div>
     </div>
 
@@ -273,6 +273,7 @@
             // 创建田字格容器
             const tianziGrid = document.createElement('div');
             tianziGrid.className = 'tianzi-grid';
+            tianziGrid.onclick = () => location.href = 'querychar.html?char='+charData.char;
 
             // 创建汉字元素
             const characterDiv = document.createElement('div');
@@ -333,6 +334,7 @@
             generateGrid();
             addInteraction();
         });
+
     </script>
 </body>
 </html>
