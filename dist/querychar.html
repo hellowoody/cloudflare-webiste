@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉字笔画查询器</title>
+    <script src="./lib/cnchar/cnchar.min.js"></script>
+    <script src="./lib/cnchar/cnchar.poly.min.js"></script>
+    <script src="./lib/cnchar/cnchar.order.min.js"></script>
+    <script src="./lib/cnchar/cnchar.trad.min.js"></script>
+    <script src="./lib/cnchar/cnchar.draw.min.js"></script>
+    <script src="./lib/cnchar/cnchar.idiom.min.js"></script>
+    <script src="./lib/cnchar/cnchar.xhy.min.js"></script>
+    <script src="./lib/cnchar/cnchar.radical.min.js"></script>
+    <script src="./lib/cnchar/cnchar.words.min.js"></script>
+    <script src="./lib/cnchar/cnchar.explain.min.js"></script>
+    <script src="./lib/cnchar/cnchar.voice.min.js"></script>
+    <script src="./lib/cnchar/cnchar.random.min.js"></script>
+    <script src="./lib/cnchar/cnchar.code.min.js"></script>
+    <script src="./lib/cnchar/cnchar.input.min.js"></script>
+    <script src="./lib/cnchar/cnchar.info.min.js"></script>
+    <script src="./lib/cnchar/cnchar.name.min.js"></script>
+    <!-- <script src="https://fastly.jsdelivr.net/npm/cnchar/cnchar.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-poly/cnchar.poly.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-order/cnchar.order.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-trad/cnchar.trad.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-draw/cnchar.draw.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-idiom/cnchar.idiom.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-xhy/cnchar.xhy.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-radical/cnchar.radical.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-words/cnchar.words.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-explain/cnchar.explain.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-voice/cnchar.voice.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-random/cnchar.random.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-code/cnchar.code.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-input/cnchar.input.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-info/cnchar.info.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/cnchar-name/cnchar.name.min.js"></script> -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.2em;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .query-button {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .query-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .query-button:active {
+            transform: translateY(-1px);
+        }
+
+        .query-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .query-button:hover::before {
+            left: 100%;
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeInUp 0.6s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .char-display {
+            font-size: 4em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .stroke-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .info-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .stroke-detail {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            line-height: 1.6;
+            border-left: 4px solid #667eea;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            animation: shake 0.8s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .title {
+                font-size: 2em;
+            }
+            
+            .char-display {
+                font-size: 3em;
+            }
+            
+            .stroke-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .char-display-wrap {
+            display: flex;
+            justify-content: center;
+            gap:16px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">✨ 汉字笔画查询器</h1>
+        
+        <div class="input-section">
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="charInput" 
+                    class="input-field" 
+                    placeholder="请输入要查询的汉字..."
+                    maxlength="10"
+                />
+            </div>
+            <button class="query-button" onclick="queryStrokes()">
+                🔍 查询笔画
+            </button>
+        </div>
+        
+        <div class="results-section" id="results"></div>
+    </div>
+
+    <script>
+        let currentResults = [];
+        const draw_option = {
+            clear: true,
+            type: cnchar.draw.TYPE.ANIMATION,
+            el: ".char-display-animation",
+            style: {
+                outlineColor:'#f00',
+                showOutline:false,
+                radicalColor: '#55f',
+                backgroundColor: 'transparent',
+                length: 80
+            },
+            line: { // 背景线条类
+                lineStraight:  true,
+                lineCross:  true,
+                lineWidth:  1,
+                lineColor: '#ddd',
+                lineDash:  true,
+                border:  true,
+                borderWidth:  1,
+                borderColor:  '#ddd',
+                borderDash:  false,
+            },
+            animation:{
+                loopAnimate: true
+            }
+        };
+
+        const stroke_option = {
+            type: cnchar.draw.TYPE.STROKE
+        }
+
+        function queryStrokes() {
+            const input = document.getElementById('charInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+            
+            if (!input) {
+                resultsDiv.innerHTML = '<div class="error-message">⚠️ 请输入要查询的汉字</div>';
+                return;
+            }
+            
+            // 显示加载状态
+            resultsDiv.innerHTML = '<div class="loading">正在查询中...</div>';
+            
+            // 模拟异步查询
+            setTimeout(() => {
+                currentResults = [];
+                resultsDiv.innerHTML = '';
+                
+                for (let char of input) {
+                    if (/[\u4e00-\u9fa5]/.test(char)) {
+                        try {
+                            const strokeCount = cnchar.stroke(char);
+                            const strokeOrder = cnchar.stroke(char, 'order');
+                            const strokeDetail = cnchar.stroke(char, 'order','detail');
+                            
+                            const result = {
+                                char: char,
+                                count: strokeCount,
+                                order: strokeOrder,
+                                detail: strokeDetail,
+                                orderShapes:convertStrokeOrder(strokeDetail),
+                                spell:cnchar.spell(char,"array", "tone", "poly")
+                            };
+                            
+                            currentResults.push(result);
+                            displayResult(result);
+                        } catch (error) {
+                            displayError(char, '查询失败，可能是不支持的字符');
+                        }
+                    } else {
+                        displayError(char, '不是有效的汉字');
+                    }
+                }
+                
+                if (currentResults.length === 0 && !document.querySelector('.error-message')) {
+                    resultsDiv.innerHTML = '<div class="error-message">❌ 没有找到有效的汉字</div>';
+                }
+            }, 500);
+        }
+        
+        function displayResult(result) {
+            const resultsDiv = document.getElementById('results');
+            console.log(result)
+            
+            const resultCard = document.createElement('div');
+            resultCard.className = 'result-card';
+            const charDisplayAnimationClassName = "char-display-animation"+"-"+Date.now()
+            const drawStrokeClassName = "draw-stroke"+"-"+Date.now()
+            
+            resultCard.innerHTML = `
+                <div class="char-display-wrap">
+                    <div class="char-display">${result.char}</div>
+                    <div class="${charDisplayAnimationClassName}">${result.char}</div>
+                </div>
+                <div class="stroke-info">
+                    <div class="info-item">
+                        <div class="info-label">读音</div>
+                        <div class="info-value">${result.spell.map(v => v.replace(/[|()]/g," "))}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">总笔画数</div>
+                        <div class="info-value">${result.count} 画</div>
+                    </div>
+                </div>
+                <div class="stroke-detail">
+                    <strong>笔顺：</strong><br>
+                    <div class="${drawStrokeClassName}"></div>
+                    <br>
+                    <strong>笔画顺序（形状）：</strong><br>
+                    <span style="font-size: 1.8em; color: #764ba2; line-height: 1.5;">
+                        ${result.orderShapes ? result.orderShapes.join('  ') : '暂无数据'}
+                    </span>
+                </div>
+            `;
+            
+            resultsDiv.appendChild(resultCard);
+            draw_option.el = "."+charDisplayAnimationClassName
+            stroke_option.el = "."+drawStrokeClassName
+            cnchar.draw(result.char, draw_option);         
+            cnchar.draw(result.char, stroke_option);         
+
+        }
+        
+        function displayError(char, message) {
+            const resultsDiv = document.getElementById('results');
+            
+            const errorCard = document.createElement('div');
+            errorCard.className = 'result-card';
+            errorCard.innerHTML = `
+                <div class="char-display" style="color: #ff6b6b;">${char}</div>
+                <div class="error-message">${message}</div>
+            `;
+            
+            resultsDiv.appendChild(errorCard);
+        }
+        
+        // 支持回车键查询
+        document.getElementById('charInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                queryStrokes();
+            }
+        });
+        
+        // 输入框获得焦点时的动画效果
+        document.getElementById('charInput').addEventListener('focus', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        document.getElementById('charInput').addEventListener('blur', function() {
+            this.style.transform = 'translateY(0)';
+        });
+
+        
+        // 转换笔画顺序数组
+        function convertStrokeOrder(orderArray) {
+            if (!orderArray || !Array.isArray(orderArray)) {
+                return [];
+            }
+            const arr = orderArray[0]
+            return arr.map(letter => letter.shape);
+        }
+    </script>
+</body>
+</html>
