@@ -437,7 +437,7 @@
                 <div class="stroke-info">
                     <div class="info-item">
                         <div class="info-label">读音</div>
-                        <div class="info-value">${result.spell.map(v => v.replace(/[|()]/g," "))}</div>
+                        <div class="info-value" onclick="speak('${result.char}')">${result.spell.map(v => v.toLowerCase().replace(/[|()]/g," "))}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">总笔画数</div>
@@ -459,7 +459,7 @@
             draw_option.el = "."+charDisplayAnimationClassName
             stroke_option.el = "."+drawStrokeClassName
             cnchar.draw(result.char, draw_option);         
-            cnchar.draw(result.char, stroke_option);         
+            cnchar.draw(result.char, stroke_option);       
 
         }
         
@@ -502,7 +502,9 @@
             return arr.map(letter => letter.shape);
         }
 
-
+        function speak(char){
+            cnchar.voice.speak(char);
+        }
         // 获取当前页面的查询参数
         const urlParams = new URLSearchParams(window.location.search);
 
@@ -517,6 +519,8 @@
         } else {
             // console.log('URL 中不包含参数 char');
         }
+
+
     </script>
 </body>
 </html>
