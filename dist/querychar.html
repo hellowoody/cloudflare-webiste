@@ -339,6 +339,21 @@
     </div>
 
     <script>
+        
+        function isHuaweiBrowser() {
+            const ua = navigator.userAgent;
+            // 同时匹配"HuaweiBrowser"和"HUAWEI"关键词（兼容大小写）
+            return /HuaweiBrowser|HUAWEI/i.test(ua) && /Browser/i.test(ua);
+        }
+
+        // 使用示例
+        if (isHuaweiBrowser()) {
+            alert("当前是华为浏览器");
+        } else {
+            alert("当前不是华为浏览器");
+        }
+
+
         let currentResults = [];
         const draw_option = {
             clear: true,
