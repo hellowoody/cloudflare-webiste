@@ -20,6 +20,9 @@
     <script src="./lib/cnchar/cnchar.input.min.js"></script>
     <script src="./lib/cnchar/cnchar.info.min.js"></script>
     <script src="./lib/cnchar/cnchar.name.min.js"></script> -->
+
+    <!-- <script src="./lib/cnchar/cnchar.all.min.js"></script> -->
+
     <script src="https://fastly.jsdelivr.net/npm/cnchar/cnchar.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-poly/cnchar.poly.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-order/cnchar.order.min.js"></script>
@@ -30,7 +33,8 @@
     <script src="https://fastly.jsdelivr.net/npm/cnchar-radical/cnchar.radical.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-words/cnchar.words.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-explain/cnchar.explain.min.js"></script>
-    <script src="https://fastly.jsdelivr.net/npm/cnchar-voice/cnchar.voice.min.js"></script>
+    <script src="./lib/cnchar/cnchar.voice.min.js"></script>
+    <!-- <script src="https://fastly.jsdelivr.net/npm/cnchar-voice/cnchar.voice.min.js"></script> -->
     <script src="https://fastly.jsdelivr.net/npm/cnchar-random/cnchar.random.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-code/cnchar.code.min.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/cnchar-input/cnchar.input.min.js"></script>
@@ -395,7 +399,8 @@
                             const strokeCount = cnchar.stroke(char);
                             const strokeOrder = cnchar.stroke(char, 'order');
                             const strokeDetail = cnchar.stroke(char, 'order','detail');
-                            
+                            console.log(cnchar.spell(char,"array", "tone", "poly"))
+                            console.log(cnchar.spell(char,'tone', 'flat', 'array', 'low'))
                             const result = {
                                 char: char,
                                 count: strokeCount,
@@ -407,6 +412,8 @@
                             
                             currentResults.push(result);
                             displayResult(result);
+
+                 
                         } catch (error) {
                             displayError(char, '查询失败，可能是不支持的字符');
                         }
@@ -504,6 +511,8 @@
         }
 
         function speak(char){
+            cnchar.voice(char);
+            return
             // 使用示例
             if (isHuaweiBrowser()) {
                 // console.log("当前是华为浏览器");
