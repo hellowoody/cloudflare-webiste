@@ -1,0 +1,328 @@
+
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .wrap { padding: 1rem 0; font-family: var(--font-sans); }
+  canvas { display: block; touch-action: none; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+  .panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 16px; }
+  .metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); line-height: 1; }
+  .sim-bar-wrap { background: var(--color-border-tertiary); border-radius: 4px; height: 6px; margin-top: 8px; overflow: hidden; }
+  .sim-bar { height: 100%; border-radius: 4px; transition: width .15s, background .15s; }
+  .hint { font-size: 12px; color: var(--color-text-tertiary); margin-top: 10px; text-align: center; }
+  .vec-info { display: flex; gap: 12px; margin-top: 12px; }
+  .vec-chip { flex: 1; border-radius: var(--border-radius-md); padding: 10px 14px; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); }
+  .vec-chip-label { font-size: 11px; font-weight: 500; margin-bottom: 3px; }
+  .vec-chip-val { font-size: 13px; color: var(--color-text-secondary); font-family: var(--font-mono); }
+</style>
+<div class="wrap">
+  <canvas id="c" width="680" height="400"></canvas>
+  <div class="vec-info">
+    <div class="vec-chip" id="chip-a">
+      <div class="vec-chip-label" style="color:#3B8BD4">向量 A</div>
+      <div class="vec-chip-val" id="info-a">(1.00, 0.00) | θ=0°</div>
+    </div>
+    <div class="vec-chip" id="chip-b">
+      <div class="vec-chip-label" style="color:#D85A30">向量 B</div>
+      <div class="vec-chip-val" id="info-b">(0.71, 0.71) | θ=45°</div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="metric">
+      <div class="metric-label">夹角 θ</div>
+      <div class="metric-value" id="angle-val">45.0°</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">余弦相似度 cos(θ)</div>
+      <div class="metric-value" id="cos-val">0.707</div>
+      <div class="sim-bar-wrap"><div class="sim-bar" id="sim-bar" style="width:70.7%;background:#1D9E75"></div></div>
+    </div>
+  </div>
+  <p class="hint">拖拽箭头尖端，旋转向量 · 两向量方向越接近，余弦相似度越高</p>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 680, H = 400;
+const cx = W / 2, cy = H / 2;
+const SCALE = 130;
+
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor  = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+const axisColor  = dark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';
+const labelColor = dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+const arcColor   = dark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.22)';
+const projColor  = dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.10)';
+const bgGlow     = dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
+
+let vA = { x: 1, y: 0 };
+let vB = { x: Math.cos(Math.PI/4), y: -Math.sin(Math.PI/4) };
+
+let drag = null;
+const DRAG_RADIUS = 22;
+
+function vecToCanvas(v) {
+  return { x: cx + v.x * SCALE, y: cy - v.y * SCALE };
+}
+
+function canvasToVec(px, py) {
+  return { x: (px - cx) / SCALE, y: (cy - py) / SCALE };
+}
+
+function normalize(v) {
+  const len = Math.sqrt(v.x*v.x + v.y*v.y);
+  if (len < 0.001) return { x: 1, y: 0 };
+  return { x: v.x/len, y: v.y/len };
+}
+
+function cosineSim(a, b) {
+  const na = normalize(a), nb = normalize(b);
+  return na.x * nb.x + na.y * nb.y;
+}
+
+function angleDeg(v) {
+  return Math.atan2(v.y, v.x) * 180 / Math.PI;
+}
+
+function drawArrow(from, to, color, width, label, tipFill) {
+  const dx = to.x - from.x, dy = to.y - from.y;
+  const len = Math.sqrt(dx*dx + dy*dy);
+  if (len < 1) return;
+  const ux = dx/len, uy = dy/len;
+  const headLen = 14, headW = 7;
+
+  ctx.beginPath();
+  ctx.moveTo(from.x, from.y);
+  ctx.lineTo(to.x - ux*headLen*0.6, to.y - uy*headLen*0.6);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Arrow head
+  ctx.beginPath();
+  ctx.moveTo(to.x, to.y);
+  ctx.lineTo(to.x - ux*headLen + uy*headW, to.y - uy*headLen - ux*headW);
+  ctx.lineTo(to.x - ux*headLen - uy*headW, to.y - uy*headLen + ux*headW);
+  ctx.closePath();
+  ctx.fillStyle = tipFill || color;
+  ctx.fill();
+
+  if (label) {
+    ctx.font = '500 13px "Anthropic Sans", sans-serif';
+    ctx.fillStyle = color;
+    const lx = from.x + (to.x - from.x) * 0.55 + uy * -22;
+    const ly = from.y + (to.y - from.y) * 0.55 + ux * 22;
+    ctx.fillText(label, lx, ly);
+  }
+}
+
+function drawDot(pos, color, r) {
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function drawGrid() {
+  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = gridColor;
+  for (let i = -4; i <= 4; i++) {
+    const x = cx + i * SCALE;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    const y = cy + i * SCALE;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Axes
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = axisColor;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+
+  // Axis labels
+  ctx.font = '12px "Anthropic Sans", sans-serif';
+  ctx.fillStyle = labelColor;
+  ctx.fillText('x', W - 18, cy - 8);
+  ctx.fillText('y', cx + 8, 16);
+  ctx.fillText('O', cx + 5, cy + 14);
+
+  // Unit marks
+  for (let i = -3; i <= 3; i++) {
+    if (i === 0) continue;
+    ctx.fillStyle = labelColor;
+    ctx.fillText(i, cx + i * SCALE - 4, cy + 14);
+    ctx.fillText(i === -1 ? '−1' : i, cx + 5, cy - i * SCALE + 4);
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  drawGrid();
+
+  const nA = normalize(vA), nB = normalize(vB);
+  const cosVal = cosineSim(vA, vB);
+  const angle = Math.acos(Math.max(-1, Math.min(1, cosVal)));
+
+  // Shaded region between vectors
+  const tipA = vecToCanvas({ x: nA.x * 1, y: nA.y * 1 });
+  const tipB = vecToCanvas({ x: nB.x * 1, y: nB.y * 1 });
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  // arc from A angle to B angle
+  const angA = Math.atan2(-nA.y, nA.x);
+  const angB = Math.atan2(-nB.y, nB.x);
+  ctx.arc(cx, cy, SCALE, angA, angB, (angB - angA + Math.PI*2) % (Math.PI*2) > Math.PI);
+  ctx.closePath();
+  const simColor = cosVal > 0.7 ? '#1D9E75' : cosVal > 0 ? '#BA7517' : '#A32D2D';
+  ctx.fillStyle = cosVal > 0.7 ? 'rgba(29,158,117,0.12)' : cosVal > 0 ? 'rgba(186,117,23,0.10)' : 'rgba(163,45,45,0.10)';
+  ctx.fill();
+
+  // Projection of B onto A (dashed line)
+  const proj = nA.x * nB.x + nA.y * nB.y;
+  const projPt = vecToCanvas({ x: nA.x * proj, y: nA.y * proj });
+  ctx.beginPath();
+  ctx.setLineDash([4, 4]);
+  ctx.moveTo(vecToCanvas({ x: nB.x, y: nB.y }).x, vecToCanvas({ x: nB.x, y: nB.y }).y);
+  ctx.lineTo(projPt.x, projPt.y);
+  ctx.strokeStyle = projColor;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Projection dot on A axis
+  drawDot(projPt, projColor.replace('0.12', '0.6'), 3);
+
+  // Angle arc label
+  const midAng = (angA + angB) / 2;
+  // check if we went the short way
+  let dAng = angB - angA;
+  while (dAng < 0) dAng += Math.PI*2;
+  const short = dAng < Math.PI;
+  const arcMid = angA + (short ? dAng : dAng - Math.PI*2) / 2;
+  const arcR = SCALE * 0.38;
+  const lx = cx + Math.cos(arcMid) * arcR;
+  const ly = cy + Math.sin(arcMid) * arcR;
+
+  ctx.font = '500 12px "Anthropic Sans", sans-serif';
+  ctx.fillStyle = arcColor;
+  ctx.textAlign = 'center';
+  ctx.fillText('θ', lx, ly + 4);
+  ctx.textAlign = 'left';
+
+  // Angle arc
+  ctx.beginPath();
+  ctx.arc(cx, cy, SCALE * 0.22, angA, angB, !short);
+  ctx.strokeStyle = arcColor;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Unit circle (faint)
+  ctx.beginPath();
+  ctx.arc(cx, cy, SCALE, 0, Math.PI*2);
+  ctx.strokeStyle = gridColor;
+  ctx.lineWidth = 0.75;
+  ctx.setLineDash([3, 5]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Draw vectors (scaled to 1.5 units for visibility)
+  const visLen = 1.5;
+  const tipAc = vecToCanvas({ x: nA.x * visLen, y: nA.y * visLen });
+  const tipBc = vecToCanvas({ x: nB.x * visLen, y: nB.y * visLen });
+  const origin = { x: cx, y: cy };
+
+  // Glow / halo on tips
+  const gradient = ctx.createRadialGradient(tipAc.x, tipAc.y, 0, tipAc.x, tipAc.y, 18);
+  gradient.addColorStop(0, 'rgba(59,139,212,0.25)');
+  gradient.addColorStop(1, 'rgba(59,139,212,0)');
+  ctx.beginPath(); ctx.arc(tipAc.x, tipAc.y, 18, 0, Math.PI*2);
+  ctx.fillStyle = gradient; ctx.fill();
+
+  const gradientB = ctx.createRadialGradient(tipBc.x, tipBc.y, 0, tipBc.x, tipBc.y, 18);
+  gradientB.addColorStop(0, 'rgba(216,90,48,0.25)');
+  gradientB.addColorStop(1, 'rgba(216,90,48,0)');
+  ctx.beginPath(); ctx.arc(tipBc.x, tipBc.y, 18, 0, Math.PI*2);
+  ctx.fillStyle = gradientB; ctx.fill();
+
+  drawArrow(origin, tipAc, '#3B8BD4', 2.5, 'A');
+  drawArrow(origin, tipBc, '#D85A30', 2.5, 'B');
+
+  // Draggable handle dots
+  drawDot(tipAc, '#3B8BD4', 7);
+  drawDot(tipBc, '#D85A30', 7);
+  drawDot(tipAc, 'rgba(255,255,255,0.6)', 3);
+  drawDot(tipBc, 'rgba(255,255,255,0.6)', 3);
+
+  // Formula overlay
+  ctx.font = '500 13px "Anthropic Sans", sans-serif';
+  ctx.fillStyle = dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)';
+  ctx.textAlign = 'right';
+  ctx.fillText('cos(θ) = (A · B) / (|A| × |B|)', W - 16, H - 14);
+  ctx.textAlign = 'left';
+
+  // Update DOM
+  const angleDegVal = (angle * 180 / Math.PI).toFixed(1);
+  document.getElementById('angle-val').textContent = angleDegVal + '°';
+  document.getElementById('cos-val').textContent = cosVal.toFixed(3);
+
+  const pct = ((cosVal + 1) / 2 * 100).toFixed(1);
+  document.getElementById('sim-bar').style.width = pct + '%';
+  document.getElementById('sim-bar').style.background = simColor;
+
+  const aAng = angleDeg(nA).toFixed(1);
+  const bAng = angleDeg(nB).toFixed(1);
+  document.getElementById('info-a').textContent = `(${nA.x.toFixed(2)}, ${nA.y.toFixed(2)}) | θ=${aAng}°`;
+  document.getElementById('info-b').textContent = `(${nB.x.toFixed(2)}, ${nB.y.toFixed(2)}) | θ=${bAng}°`;
+}
+
+function getTipPos(v, scale) {
+  return vecToCanvas({ x: normalize(v).x * scale, y: normalize(v).y * scale });
+}
+
+function hitTest(px, py, v) {
+  const tip = getTipPos(v, 1.5);
+  const dx = px - tip.x, dy = py - tip.y;
+  return Math.sqrt(dx*dx + dy*dy) < DRAG_RADIUS;
+}
+
+function getEventPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width, scaleY = H / rect.height;
+  const src = e.touches ? e.touches[0] : e;
+  return { x: (src.clientX - rect.left) * scaleX, y: (src.clientY - rect.top) * scaleY };
+}
+
+canvas.addEventListener('mousedown', e => {
+  const p = getEventPos(e);
+  if (hitTest(p.x, p.y, vA)) drag = 'A';
+  else if (hitTest(p.x, p.y, vB)) drag = 'B';
+});
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const p = getEventPos(e);
+  if (hitTest(p.x, p.y, vA)) drag = 'A';
+  else if (hitTest(p.x, p.y, vB)) drag = 'B';
+}, { passive: false });
+
+function onMove(e) {
+  if (!drag) return;
+  if (e.cancelable) e.preventDefault();
+  const p = getEventPos(e);
+  const v = canvasToVec(p.x, p.y);
+  const nv = normalize(v);
+  if (drag === 'A') vA = nv;
+  else vB = nv;
+  draw();
+}
+canvas.addEventListener('mousemove', onMove);
+canvas.addEventListener('touchmove', onMove, { passive: false });
+
+function stopDrag() { drag = null; }
+canvas.addEventListener('mouseup', stopDrag);
+canvas.addEventListener('touchend', stopDrag);
+document.addEventListener('mouseup', stopDrag);
+
+draw();
+</script>
