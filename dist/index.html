@@ -1,570 +1,472 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hellowoody - 个人档案</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Orbitron', monospace;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-            color: #00ffff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-        
-        /* 3D 背景网格 */
-        .bg-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            transform: perspective(1000px) rotateX(60deg);
-            transform-origin: bottom;
-            z-index: -1;
-            animation: gridMove 20s linear infinite;
-        }
-        
-        @keyframes gridMove {
-            0% { transform: perspective(1000px) rotateX(60deg) translateY(0); }
-            100% { transform: perspective(1000px) rotateX(60deg) translateY(50px); }
-        }
-        
-        /* 像素化头像容器 */
-        .avatar-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin: 2rem auto;
-            background: linear-gradient(45deg, #ff0080, #00ffff);
-            padding: 4px;
-            clip-path: polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px);
-            animation: neonPulse 2s ease-in-out infinite alternate;
-        }
-        
-        .avatar {
-            width: 100%;
-            height: 100%;
-            background: #1a1a2e;
-            clip-path: polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* 像素化头像 */
-        .pixel-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #00ffff 0%, #ff0080 100%);
-            position: relative;
-            image-rendering: pixelated;
-            transform: scale(2);
-        }
-        
-        .pixel-avatar::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 60px;
-            height: 60px;
-            background: #1a1a2e;
-            border-radius: 50%;
-        }
-        
-        .pixel-avatar::after {
-            content: '👤';
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 30px;
-            color: #00ffff;
-        }
-        
-        @keyframes neonPulse {
-            0% { box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff; }
-            100% { box-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080, 0 0 30px #ff0080; }
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        
-        .name {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(45deg, #00ffff, #ff0080, #00ff00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            animation: glitch 3s infinite;
-        }
-        
-        @keyframes glitch {
-            0%, 90%, 100% { transform: translateX(0); }
-            91% { transform: translateX(-2px); }
-            92% { transform: translateX(2px); }
-            93% { transform: translateX(-2px); }
-        }
-        
-        .title {
-            font-size: 1.2rem;
-            color: #ff0080;
-            margin-bottom: 0.5rem;
-            opacity: 0.8;
-        }
-        
-        .status {
-            display: inline-block;
-            background: rgba(0, 255, 255, 0.1);
-            border: 1px solid #00ffff;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            animation: statusBlink 2s infinite;
-        }
-        
-        @keyframes statusBlink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0.5; }
-        }
-        
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        
-        .panel {
-            background: rgba(26, 26, 46, 0.8);
-            border: 1px solid #00ffff;
-            border-radius: 10px;
-            padding: 2rem;
-            position: relative;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
-        }
-        
-        .panel:hover {
-            transform: translateY(-10px) rotateX(5deg);
-            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
-            border-color: #ff0080;
-        }
-        
-        .panel::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            bottom: -1px;
-            background: linear-gradient(45deg, #00ffff, #ff0080, #00ff00, #ffff00);
-            border-radius: 10px;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .panel:hover::before {
-            opacity: 0.3;
-        }
-        
-        .panel-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #00ffff;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .panel-title::before {
-            content: '▶';
-            color: #ff0080;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        
-        .skill-bar {
-            background: rgba(0, 0, 0, 0.5);
-            height: 25px;
-            border-radius: 15px;
-            margin: 10px 0;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #00ffff;
-        }
-        
-        .skill-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ffff, #ff0080);
-            border-radius: 15px;
-            position: relative;
-            animation: skillLoad 2s ease-out forwards;
-            transform-origin: left;
-        }
-        
-        .skill-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes skillLoad {
-            from { transform: scaleX(0); }
-            to { transform: scaleX(1); }
-        }
-        
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .skill-text {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.9rem;
-            color: #fff;
-            font-weight: 600;
-            z-index: 2;
-        }
-        
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .contact-item:hover {
-            background: rgba(0, 255, 255, 0.1);
-            padding-left: 20px;
-        }
-        
-        .contact-icon {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(45deg, #00ffff, #ff0080);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-        
-        .floating-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #00ffff;
-            border-radius: 50%;
-            animation: float 10s infinite linear;
-            opacity: 0.6;
-        }
-        
-        @keyframes float {
-            from {
-                transform: translateY(100vh) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.6;
-            }
-            to {
-                transform: translateY(-10vh) translateX(100px);
-                opacity: 0;
-            }
-        }
-        
-        .bio-text {
-            line-height: 1.8;
-            color: #ccc;
-            font-size: 1rem;
-        }
-        
-        .highlight {
-            color: #00ffff;
-            font-weight: 600;
-        }
-        
-        /* 3D 装饰元素 */
-        .decoration-3d {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border: 2px solid #00ffff;
-            transform-style: preserve-3d;
-            animation: rotate3d 10s infinite linear;
-        }
-        
-        .decoration-3d::before,
-        .decoration-3d::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 2px solid #ff0080;
-            transform: rotateY(90deg);
-        }
-        
-        .decoration-3d::after {
-            transform: rotateX(90deg);
-        }
-        
-        @keyframes rotate3d {
-            from { transform: rotateX(0) rotateY(0) rotateZ(0); }
-            to { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
-        }
-        
-        .decoration-1 {
-            top: 10%;
-            right: 10%;
-        }
-        
-        .decoration-2 {
-            bottom: 20%;
-            left: 5%;
-            animation-delay: -5s;
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .name {
-                font-size: 2rem;
-            }
-            
-            .container {
-                padding: 1rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>不去便利店的少少</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=DM+Mono:ital,wght@0,300;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f5f0;
+      --text: #1a1a18;
+      --muted: #8a8880;
+      --accent: #3d5a3e;
+      --line: #d8d4cc;
+      --hover: #2a3d2b;
+      --tag-bg: #edeae3;
+      --serif: 'Noto Serif SC', serif;
+      --mono: 'DM Mono', monospace;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--serif);
+      font-weight: 300;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    /* ── layout ── */
+    .wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ── header ── */
+    header {
+      padding: 5rem 0 3rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .avatar-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent);
+      background: url(https://i1.hdslb.com/bfs/face/155bdcb071c02d4d2fcf16054650ef6e5021e81f.jpg@128w_128h_1c_1s.webp);
+      background-size: contain;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .avatar-leaf {
+      width: 28px;
+      height: 28px;
+    }
+
+    .name-block h1 {
+      font-size: 1.2rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .name-block .handle {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+
+    .bio {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 2;
+      max-width: 520px;
+      margin-bottom: 2rem;
+    }
+
+    .bio em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      background: var(--tag-bg);
+      padding: 0.25rem 0.7rem;
+      border-radius: 2px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── nav ── */
+    nav {
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      text-decoration: none;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    nav a.active,
+    nav a:hover { color: var(--accent); }
+
+    nav a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1.52rem;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    /* ── main sections ── */
+    main { padding: 3rem 0 6rem; }
+
+    section { margin-bottom: 3.5rem; }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── about ── */
+    .about-text {
+      font-size: 0.93rem;
+      line-height: 2.1;
+      color: var(--text);
+    }
+
+    .about-text p + p { margin-top: 1.2em; }
+
+    /* ── works list ── */
+    .work-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 1rem;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+
+    .work-item:first-of-type { border-top: 1px solid var(--line); }
+
+    .work-item:hover .work-title { color: var(--accent); }
+    .work-item:hover .work-arrow { opacity: 1; transform: translate(2px, -2px); }
+
+    .work-title {
+      font-size: 0.93rem;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.5;
+      transition: color 0.2s;
+    }
+
+    .work-meta {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      letter-spacing: 0.04em;
+    }
+
+    .work-arrow {
+      font-size: 0.85rem;
+      color: var(--accent);
+      opacity: 0;
+      transition: all 0.2s;
+      padding-top: 0.1rem;
+      flex-shrink: 0;
+    }
+
+    /* ── philosophy ── */
+    .quote-block {
+      border-left: 1px solid var(--accent);
+      padding: 0.8rem 1.5rem;
+      margin: 0;
+    }
+
+    .quote-block p {
+      font-size: 0.93rem;
+      line-height: 2;
+      color: var(--text);
+    }
+
+    .quote-block p + p { margin-top: 0.8em; }
+
+    /* ── contact ── */
+    .link-list { list-style: none; }
+
+    .link-list li {
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .link-list li:first-child { border-top: 1px solid var(--line); }
+
+    .link-list a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.88rem;
+      width: 100%;
+      transition: color 0.2s;
+    }
+
+    .link-list a:hover { color: var(--accent); }
+
+    .link-list a:hover .link-arrow { opacity: 1; transform: translate(2px, -2px); }
+
+    .link-platform {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      min-width: 70px;
+    }
+
+    .link-title { flex: 1; }
+
+    .link-arrow {
+      font-size: 0.8rem;
+      color: var(--accent);
+      opacity: 0;
+      transition: all 0.2s;
+    }
+
+    /* ── footer ── */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 2rem 0;
+    }
+
+    footer p {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── decorative grain ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ── fade in ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    header  { animation: fadeUp 0.6s ease both; }
+    nav     { animation: fadeUp 0.6s 0.1s ease both; }
+    main    { animation: fadeUp 0.6s 0.18s ease both; }
+
+    /* ── responsive ── */
+    @media (max-width: 480px) {
+      header { padding: 3rem 0 2rem; }
+      .wrap  { padding: 0 1.25rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="bg-grid"></div>
-    <div class="floating-particles"></div>
-    <div class="decoration-3d decoration-1"></div>
-    <div class="decoration-3d decoration-2"></div>
-    
-    <div class="container">
-        <div class="header">
-            <div class="avatar-container">
-                <div class="avatar">
-                    <div class="pixel-avatar"></div>
-                </div>
-            </div>
-            <h1 class="name">HelloWoody</h1>
-            <p class="title">不去便利店的少少 | YOUNGGUN</p>
-            <span class="status">● ONLINE - 神经连接已建立</span>
-        </div>
-        
-        <div class="content-grid">
-            <div class="panel">
-                <h2 class="panel-title">系统信息</h2>
-                <div class="bio-text">
-                    我是一名专注于<span class="highlight">人工智能</span>和<span class="highlight">虚拟现实</span>的数字创作者。
-                    在<span class="highlight">赛博空间</span>中探索无限可能，用代码构建未来。
-                    <br><br>
-                    "在数字与现实的边界，寻找真实的自我。"
-                    <br><br>
-                    专长领域包括神经网络设计、量子计算模拟、以及沉浸式体验开发。
-                </div>
-            </div>
-            
-            <div class="panel">
-                <h2 class="panel-title">技能矩阵</h2>
-                <div class="skill-bar">
-                    <div class="skill-fill" style="width: 95%;"></div>
-                    <div class="skill-text">Python / AI 开发</div>
-                </div>
-                <div class="skill-bar">
-                    <div class="skill-fill" style="width: 88%;"></div>
-                    <div class="skill-text">JavaScript / Web3</div>
-                </div>
-                <div class="skill-bar">
-                    <div class="skill-fill" style="width: 92%;"></div>
-                    <div class="skill-text">Unity / VR 开发</div>
-                </div>
-                <div class="skill-bar">
-                    <div class="skill-fill" style="width: 85%;"></div>
-                    <div class="skill-text">Blender / 3D 建模</div>
-                </div>
-                <div class="skill-bar">
-                    <div class="skill-fill" style="width: 90%;"></div>
-                    <div class="skill-text">网络安全 / 渗透测试</div>
-                </div>
-            </div>
-            
-            <div class="panel">
-                <h2 class="panel-title">项目档案</h2>
-                <div class="bio-text">
-                    <strong class="highlight">◆ NeuroLink Interface</strong><br>
-                    脑机接口原型设计 - 思维控制的虚拟环境
-                    <br><br>
-                    <strong class="highlight">◆ Cyber City VR</strong><br>
-                    沉浸式赛博朋克城市体验 - 未来世界的数字重现
-                    <br><br>
-                    <strong class="highlight">◆ Ghost Protocol</strong><br>
-                    去中心化隐私保护系统 - 数字时代的匿名盾牌
-                </div>
-            </div>
-            
-        </div>
+
+<div class="wrap">
+
+  <!-- ── header ── -->
+  <header>
+    <div class="avatar-row">
+      <div class="avatar" aria-hidden="true"> </div>
+      <div class="name-block">
+        <h1>不去便利店的少少</h1>
+        <div class="handle">@younggun</div>
+      </div>
     </div>
-    
-    <script>
-        // 创建浮动粒子效果
-        function createParticles() {
-            const particleContainer = document.querySelector('.floating-particles');
-            
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 10 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 5) + 's';
-                
-                // 随机颜色
-                const colors = ['#00ffff', '#ff0080', '#00ff00', '#ffff00'];
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                
-                particleContainer.appendChild(particle);
-            }
-        }
-        
-        // 初始化粒子效果
-        createParticles();
-        
-        // 鼠标移动效果
-        document.addEventListener('mousemove', (e) => {
-            const cursor = document.createElement('div');
-            cursor.style.position = 'fixed';
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            cursor.style.width = '6px';
-            cursor.style.height = '6px';
-            cursor.style.background = '#00ffff';
-            cursor.style.borderRadius = '50%';
-            cursor.style.pointerEvents = 'none';
-            cursor.style.zIndex = '9999';
-            cursor.style.opacity = '0.8';
-            cursor.style.transition = 'all 0.5s ease';
-            
-            document.body.appendChild(cursor);
-            
-            setTimeout(() => {
-                cursor.style.opacity = '0';
-                cursor.style.transform = 'scale(3)';
-                setTimeout(() => {
-                    document.body.removeChild(cursor);
-                }, 500);
-            }, 100);
-        });
-        
-        // 技能条动画触发
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animationPlayState = 'running';
-                }
-            });
-        });
-        
-        document.querySelectorAll('.skill-fill').forEach(el => {
-            observer.observe(el);
-        });
-        
-        // 键盘音效（模拟）
-        document.addEventListener('keydown', () => {
-            // 创建视觉反馈
-            document.body.style.boxShadow = 'inset 0 0 100px rgba(0, 255, 255, 0.1)';
-            setTimeout(() => {
-                document.body.style.boxShadow = '';
-            }, 100);
-        });
-        
-        // 面板悬停3D效果
-        document.querySelectorAll('.panel').forEach(panel => {
-            panel.addEventListener('mousemove', (e) => {
-                const rect = panel.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = (y - centerY) / 10;
-                const rotateY = (centerX - x) / 10;
-                
-                panel.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            });
-            
-            panel.addEventListener('mouseleave', () => {
-                panel.style.transform = '';
-            });
-        });
-    </script>
+
+    <p class="bio">
+      记录慢生活与<em>手作日常</em>的内容创作者。<br>
+      相信生活的质感藏在自己动手的每一个细节里——<br>
+      而不是便利店货架上。
+    </p>
+
+    <div class="tags">
+      <span class="tag">vlog</span>
+      <span class="tag">技术</span>
+      <span class="tag">Javascript</span>
+      <span class="tag">Golang</span>
+      <span class="tag">吃播</span>
+      <span class="tag">嵌入式</span>
+    </div>
+  </header>
+
+  <!-- ── nav ── -->
+  <nav aria-label="页面导航">
+    <a href="#about" class="active">关于</a>
+    <a href="#works">作品</a>
+    <a href="#philosophy">理念</a>
+    <a href="#contact">联系</a>
+  </nav>
+
+  <!-- ── main ── -->
+  <main>
+
+    <!-- about -->
+    <section id="about" aria-labelledby="about-label">
+      <p class="section-label" id="about-label">关于我</p>
+      <div class="about-text">
+        <p>是一个喜欢待在家里、技术i人。</p>
+        <p>我在 B 站记录这些日常，没有什么宏大的主题，只是想让屏幕另一端的你也能感受到，生活可以不那么着急。</p>
+      </div>
+    </section>
+
+    <!-- works -->
+    <section id="works" aria-labelledby="works-label">
+      <p class="section-label" id="works-label">代表作品</p>
+
+      <a class="work-item" href="https://www.bilibili.com/video/BV1CM4y1z7aK" target="_blank" rel="noopener">
+        <div>
+          <div class="work-title">「技术分享」 · V8引擎实现JS中Array.sort排序的底层算法TimSort</div>
+          <div class="work-meta">vlog · 技术</div>
+        </div>
+        <div class="work-arrow">↗</div>
+      </a>
+
+      <a class="work-item" href="https://www.bilibili.com/video/BV1R54y1N79q" target="_blank" rel="noopener">
+        <div>
+          <div class="work-title">Html5＆CSS3实现情人节贺卡</div>
+          <div class="work-meta">节日 · 代码挑战</div>
+        </div>
+        <div class="work-arrow">↗</div>
+      </a>
+
+      <a class="work-item" href="https://www.bilibili.com/video/BV11z411B7ht" target="_blank" rel="noopener">
+        <div>
+          <div class="work-title">1小时代码挑战 · 利用echarts实现数据可视化网站</div>
+          <div class="work-meta">vlog · 代码挑战</div>
+        </div>
+        <div class="work-arrow">↗</div>
+      </a>
+
+      <a class="work-item" href="https://www.bilibili.com/video/BV1z84y1V7E9" target="_blank" rel="noopener">
+        <div>
+          <div class="work-title">5分钟带你快速理解LCG-线性同余随机函数</div>
+          <div class="work-meta">vlog · 技术分享</div>
+        </div>
+        <div class="work-arrow">↗</div>
+      </a>
+
+      <a class="work-item" href="https://space.bilibili.com/37370017" target="_blank" rel="noopener">
+        <div>
+          <div class="work-title">查看全部视频 →</div>
+          <div class="work-meta">bilibili · space.bilibili.com/37370017</div>
+        </div>
+        <div class="work-arrow">↗</div>
+      </a>
+    </section>
+
+    <!-- philosophy -->
+    <section id="philosophy" aria-labelledby="phil-label">
+      <p class="section-label" id="phil-label">创作理念</p>
+      <blockquote class="quote-block">
+        <p>便利是现代生活给我们的礼物，但我更想要的是那种「不紧不慢亲身体验」的满足感。</p>
+        <p>我的视频没有特效、没有 BGM 轰炸，只有真实的厨房声音、窗外的风声，还有一个普通人在烟火气里找到的小确幸。</p>
+        <p>如果你刷到这里，希望屏幕里的缓慢，能让你今天的某一刻也慢下来。</p>
+      </blockquote>
+    </section>
+
+    <!-- contact -->
+    <section id="contact" aria-labelledby="contact-label">
+      <p class="section-label" id="contact-label">找到我</p>
+      <ul class="link-list">
+        <li>
+          <a href="https://space.bilibili.com/37370017" target="_blank" rel="noopener">
+            <span class="link-platform">bilibili | 哔哩哔哩</span>
+            <span class="link-title">不去便利店的少少 | id:37370017</span>
+            <span class="link-arrow">↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="#"  rel="noopener">
+            <span class="link-platform">xiaohushu | 小红书</span>
+            <span class="link-title">不去便利店的少少 | id:274680936</span>
+            <span class="link-arrow">↗</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- ── footer ── -->
+  <footer>
+    <p>不去便利店的少少 · 记录生活 · 分享技术</p>
+  </footer>
+
+</div>
+
+<script>
+  const navLinks = document.querySelectorAll('nav a');
+  const sections = document.querySelectorAll('main section');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
 </body>
 </html>
