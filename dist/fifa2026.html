@@ -1,0 +1,322 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#BA7517;--silver:#888780;--green:#1D9E75;
+  --blue-light:#E6F1FB;--blue:#185FA5;--blue-dark:#042C53;
+  --amber-light:#FAEEDA;--amber:#BA7517;
+  --teal-light:#E1F5EE;--teal:#0F6E56;
+  --coral-light:#FAECE7;--coral:#993C1D;
+  --purple-light:#EEEDFE;--purple:#534AB7;
+  --gray-light:#F1EFE8;--gray:#5F5E5A;
+  --bg:var(--color-background-primary);
+  --bg2:var(--color-background-secondary);
+  --txt:var(--color-text-primary);
+  --txt2:var(--color-text-secondary);
+  --bdr:var(--color-border-tertiary);
+}
+body{font-family:var(--font-sans,"Anthropic Sans",sans-serif);color:var(--txt);background:transparent}
+h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+
+.page{padding:1.5rem 1rem 3rem;max-width:1100px;margin:0 auto}
+.hero{text-align:center;margin-bottom:2rem}
+.hero h1{font-size:22px;font-weight:500;margin-bottom:.3rem}
+.hero p{font-size:13px;color:var(--txt2)}
+
+/* -------- SECTION HEADERS -------- */
+.section-header{display:flex;align-items:center;gap:10px;margin:2rem 0 1rem;font-size:16px;font-weight:500}
+.section-badge{background:var(--color-background-info);color:var(--color-text-info);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+
+/* -------- GROUP CARDS -------- */
+.groups-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:1rem}
+.group-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--border-radius-lg,12px);padding:.75rem;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s,box-shadow .2s;cursor:default}
+.group-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.group-card.visible{opacity:1;transform:translateY(0)}
+.gc-header{font-size:11px;font-weight:500;color:var(--txt2);letter-spacing:.05em;margin-bottom:.5rem;text-transform:uppercase}
+.gc-team{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:13px;border-bottom:0.5px solid var(--bdr);position:relative;overflow:hidden}
+.gc-team:last-child{border-bottom:none}
+.flag{font-size:16px;line-height:1}
+.team-name{flex:1;font-size:12.5px}
+.team-rank{font-size:10px;color:var(--txt2);white-space:nowrap}
+.badge-1{background:#BA751722;color:#BA7517;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:500}
+.badge-2{background:#53535522;color:#535355;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:500}
+.badge-3{background:#0F6E5622;color:#0F6E56;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:500}
+
+/* -------- RULES BOX -------- */
+.rules-box{background:var(--bg2);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;line-height:1.7;color:var(--txt2)}
+.rules-box b{color:var(--txt);font-weight:500}
+
+/* -------- FLOW ANIMATION -------- */
+.flow-wrap{position:relative;overflow:hidden;margin:1rem 0}
+svg.flow{display:block;width:100%;overflow:visible}
+
+/* -------- R32 BRACKET -------- */
+.r32-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1rem}
+.match-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:10px;padding:.6rem .8rem;opacity:0;transform:translateX(-8px);transition:opacity .4s,transform .4s}
+.match-card.visible{opacity:1;transform:translateX(0)}
+.match-no{font-size:10px;color:var(--txt2);margin-bottom:.3rem}
+.match-teams{display:flex;flex-direction:column;gap:3px}
+.match-team{display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:6px;font-size:12.5px;transition:background .2s}
+.match-team.winner{background:var(--color-background-success);font-weight:500}
+.match-team .flag{font-size:14px}
+.vs-dot{text-align:center;font-size:10px;color:var(--txt2);padding:1px 0}
+
+/* -------- R16 -------- */
+.r16-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.r16-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:10px;padding:.6rem .8rem;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.r16-card.visible{opacity:1;transform:translateY(0)}
+
+/* -------- LEGEND -------- */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--txt2);margin:1rem 0 .5rem}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-dot{width:10px;height:10px;border-radius:50%}
+
+/* progress bar animation */
+@keyframes fillBar{from{width:0}to{width:var(--w,100%)}}
+.progress-fill{animation:fillBar 1.5s cubic-bezier(.4,0,.2,1) forwards}
+
+/* pulse for champions */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.champ-pulse{animation:pulse 2s ease-in-out infinite}
+
+/* flowing arrow */
+@keyframes flowDash{to{stroke-dashoffset:-24}}
+.flow-line{stroke-dasharray:6 4;animation:flowDash 1.2s linear infinite}
+
+@media(max-width:540px){
+  .r32-grid,.r16-grid{grid-template-columns:1fr}
+  .groups-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+
+<h2 class="sr-only">2026 FIFA 世界杯从小组赛到32强再到16强的动态预测，包含12个小组分组、晋级规则说明、32强对阵和16强对阵</h2>
+
+<div class="page">
+  <div class="hero">
+    <h1>🏆 2026 FIFA 世界杯 · 赛程预测</h1>
+    <p>48队 · 12小组 · 全新赛制 · 从小组赛到32强再到16强的完整推演</p>
+  </div>
+
+  <!-- RULES -->
+  <div class="rules-box">
+    <b>新赛制说明：</b>48支球队分为12个小组，每组4队各赛3场。<b>每组前2名</b>（共24队）直接晋级32强；<b>12组中成绩最好的8支第3名</b>也晋级，共32队参加淘汰赛。32强（Round of 32）是史上首次新增轮次，之后是16强、8强、4强直至决赛（7月19日 · 新泽西MetLife球场）。
+  </div>
+
+  <!-- GROUP STAGE -->
+  <div class="section-header">
+    <span>第一阶段</span>
+    <span class="section-badge">小组赛 · 12组 · 6月11–27日</span>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#BA7517"></div>预测组冠</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#535355"></div>预测组亚</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#0F6E56"></div>预测最佳第3（晋级）</div>
+  </div>
+
+  <div class="groups-grid" id="groups-grid"></div>
+
+  <!-- FLOW ARROW -->
+  <div class="flow-wrap" style="height:60px">
+    <svg class="flow" viewBox="0 0 600 60" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <text x="300" y="16" text-anchor="middle" fill="var(--txt2)" font-size="11" font-family="var(--font-sans)">每组前2名 + 8支最佳第3名 = 32支球队进入淘汰赛</text>
+      <line x1="300" y1="22" x2="300" y2="48" stroke="var(--color-text-info)" stroke-width="1.5" class="flow-line" marker-end="url(#fa)"/>
+    </svg>
+  </div>
+
+  <!-- R32 -->
+  <div class="section-header">
+    <span>第二阶段</span>
+    <span class="section-badge">32强 Round of 32 · 6月28–7月3日</span>
+  </div>
+  <p style="font-size:13px;color:var(--txt2);margin-bottom:1rem">组冠对阵最佳第3名，亚军相互对阵（同组球队至少到8强才可能相遇）。<b style="color:var(--txt)">粗体</b>为预测晋级者。</p>
+  <div class="r32-grid" id="r32-grid"></div>
+
+  <div class="flow-wrap" style="height:60px">
+    <svg class="flow" viewBox="0 0 600 60" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="fb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <text x="300" y="16" text-anchor="middle" fill="var(--txt2)" font-size="11" font-family="var(--font-sans)">32强胜者16队晋级16强</text>
+      <line x1="300" y1="22" x2="300" y2="48" stroke="var(--color-text-success)" stroke-width="1.5" class="flow-line" marker-end="url(#fb)"/>
+    </svg>
+  </div>
+
+  <!-- R16 -->
+  <div class="section-header">
+    <span>第三阶段</span>
+    <span class="section-badge">16强 Round of 16 · 7月4–7日</span>
+  </div>
+  <p style="font-size:13px;color:var(--txt2);margin-bottom:1rem">16强延续固定赛区制，左半区与右半区胜者在半决赛相遇。<b style="color:var(--txt)">粗体</b>为预测晋级8强者。</p>
+  <div class="r16-grid" id="r16-grid"></div>
+
+  <div style="margin-top:1.5rem;padding:1rem;background:var(--bg2);border-radius:12px;font-size:13px;color:var(--txt2);text-align:center">
+    🌟 预测<b style="color:var(--txt)">8强</b>：巴西、西班牙、法国、阿根廷、英格兰、葡萄牙、德国、荷兰 &nbsp;·&nbsp; 
+    🏆 预测<b style="color:var(--txt)">冠军</b>：<span class="champ-pulse" style="color:#BA7517;font-weight:500">🇧🇷 巴西</span>
+  </div>
+</div>
+
+<script>
+const groups = [
+  {id:'A', teams:[
+    {f:'🇲🇽',n:'墨西哥',r:'第11',pred:1},
+    {f:'🇰🇷',n:'韩国',r:'第22',pred:2},
+    {f:'🇿🇦',n:'南非',r:'第58',pred:3},
+    {f:'🇨🇿',n:'捷克',r:'附加赛',pred:4}
+  ]},
+  {id:'B', teams:[
+    {f:'🇨🇭',n:'瑞士',r:'第19',pred:1},
+    {f:'🇨🇦',n:'加拿大',r:'第43',pred:2},
+    {f:'🇧🇦',n:'波黑',r:'第65',pred:3},
+    {f:'🇶🇦',n:'卡塔尔',r:'第70',pred:4}
+  ]},
+  {id:'C', teams:[
+    {f:'🇧🇷',n:'巴西',r:'第4',pred:1},
+    {f:'🇲🇦',n:'摩洛哥',r:'第14',pred:2},
+    {f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',n:'苏格兰',r:'第39',pred:3},
+    {f:'🇭🇹',n:'海地',r:'第84',pred:4}
+  ]},
+  {id:'D', teams:[
+    {f:'🇺🇸',n:'美国',r:'第16',pred:1},
+    {f:'🇹🇷',n:'土耳其',r:'第27',pred:2},
+    {f:'🇵🇾',n:'巴拉圭',r:'第61',pred:3},
+    {f:'🇦🇺',n:'澳大利亚',r:'附加赛',pred:4}
+  ]},
+  {id:'E', teams:[
+    {f:'🇩🇪',n:'德国',r:'第9',pred:1},
+    {f:'🇨🇮',n:'科特迪瓦',r:'第35',pred:2},
+    {f:'🇪🇨',n:'厄瓜多尔',r:'第36',pred:3},
+    {f:'🇨🇼',n:'库拉索',r:'第90',pred:4}
+  ]},
+  {id:'F', teams:[
+    {f:'🇳🇱',n:'荷兰',r:'第7',pred:1},
+    {f:'🇯🇵',n:'日本',r:'第15',pred:2},
+    {f:'🇸🇪',n:'瑞典',r:'附加赛',pred:3},
+    {f:'🇹🇳',n:'突尼斯',r:'第52',pred:4}
+  ]},
+  {id:'G', teams:[
+    {f:'🇧🇪',n:'比利时',r:'第3',pred:1},
+    {f:'🇮🇷',n:'伊朗',r:'第23',pred:2},
+    {f:'🇪🇬',n:'埃及',r:'第37',pred:3},
+    {f:'🇳🇿',n:'新西兰',r:'第93',pred:4}
+  ]},
+  {id:'H', teams:[
+    {f:'🇪🇸',n:'西班牙',r:'第2',pred:1},
+    {f:'🇺🇾',n:'乌拉圭',r:'第17',pred:2},
+    {f:'🇸🇦',n:'沙特',r:'第56',pred:3},
+    {f:'🇨🇻',n:'佛得角',r:'第78',pred:4}
+  ]},
+  {id:'I', teams:[
+    {f:'🇫🇷',n:'法国',r:'第1',pred:1},
+    {f:'🇸🇳',n:'塞内加尔',r:'第18',pred:2},
+    {f:'🇳🇴',n:'挪威',r:'第25',pred:3},
+    {f:'🇮🇶',n:'伊拉克',r:'附加赛',pred:4}
+  ]},
+  {id:'J', teams:[
+    {f:'🇦🇷',n:'阿根廷',r:'第5',pred:1},
+    {f:'🇦🇹',n:'奥地利',r:'第26',pred:2},
+    {f:'🇩🇿',n:'阿尔及利亚',r:'第46',pred:3},
+    {f:'🇯🇴',n:'约旦',r:'第87',pred:4}
+  ]},
+  {id:'K', teams:[
+    {f:'🇵🇹',n:'葡萄牙',r:'第6',pred:1},
+    {f:'🇨🇴',n:'哥伦比亚',r:'第13',pred:2},
+    {f:'🇺🇿',n:'乌兹别克',r:'第50',pred:3},
+    {f:'🇨🇩',n:'刚果(金)',r:'附加赛',pred:4}
+  ]},
+  {id:'L', teams:[
+    {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'英格兰',r:'第8',pred:1},
+    {f:'🇭🇷',n:'克罗地亚',r:'第10',pred:2},
+    {f:'🇬🇭',n:'加纳',r:'第60',pred:3},
+    {f:'🇵🇦',n:'巴拿马',r:'第76',pred:4}
+  ]}
+];
+
+const r32Matches = [
+  {no:'R32-M1', t1:{f:'🇲🇽',n:'墨西哥 (A冠)',w:true}, t2:{f:'🇧🇦',n:'波黑 (B第3)',w:false}},
+  {no:'R32-M2', t1:{f:'🇨🇭',n:'瑞士 (B冠)',w:true}, t2:{f:'🇨🇿',n:'捷克 (A第3)',w:false}},
+  {no:'R32-M3', t1:{f:'🇧🇷',n:'巴西 (C冠)',w:true}, t2:{f:'🇵🇾',n:'巴拉圭 (D第3)',w:false}},
+  {no:'R32-M4', t1:{f:'🇺🇸',n:'美国 (D冠)',w:true}, t2:{f:'🇭🇹',n:'海地 (C第3)',w:false}},
+  {no:'R32-M5', t1:{f:'🇩🇪',n:'德国 (E冠)',w:true}, t2:{f:'🇸🇪',n:'瑞典 (F第3)',w:false}},
+  {no:'R32-M6', t1:{f:'🇳🇱',n:'荷兰 (F冠)',w:true}, t2:{f:'🇪🇨',n:'厄瓜多尔(E第3)',w:false}},
+  {no:'R32-M7', t1:{f:'🇧🇪',n:'比利时 (G冠)',w:true}, t2:{f:'🇸🇦',n:'沙特 (H第3)',w:false}},
+  {no:'R32-M8', t1:{f:'🇪🇸',n:'西班牙 (H冠)',w:true}, t2:{f:'🇪🇬',n:'埃及 (G第3)',w:false}},
+  {no:'R32-M9', t1:{f:'🇫🇷',n:'法国 (I冠)',w:true}, t2:{f:'🇩🇿',n:'阿尔及利亚(J第3)',w:false}},
+  {no:'R32-M10', t1:{f:'🇦🇷',n:'阿根廷 (J冠)',w:true}, t2:{f:'🇮🇶',n:'伊拉克 (I第3)',w:false}},
+  {no:'R32-M11', t1:{f:'🇵🇹',n:'葡萄牙 (K冠)',w:true}, t2:{f:'🇬🇭',n:'加纳 (L第3)',w:false}},
+  {no:'R32-M12', t1:{f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'英格兰 (L冠)',w:true}, t2:{f:'🇺🇿',n:'乌兹别克(K第3)',w:false}},
+  {no:'R32-M13', t1:{f:'🇰🇷',n:'韩国 (A亚)',w:false}, t2:{f:'🇨🇦',n:'加拿大 (B亚)',w:true}},
+  {no:'R32-M14', t1:{f:'🇲🇦',n:'摩洛哥 (C亚)',w:true}, t2:{f:'🇹🇷',n:'土耳其 (D亚)',w:false}},
+  {no:'R32-M15', t1:{f:'🇨🇮',n:'科特迪瓦(E亚)',w:false}, t2:{f:'🇯🇵',n:'日本 (F亚)',w:true}},
+  {no:'R32-M16', t1:{f:'🇮🇷',n:'伊朗 (G亚)',w:false}, t2:{f:'🇺🇾',n:'乌拉圭 (H亚)',w:true}},
+  {no:'R32-M17', t1:{f:'🇸🇳',n:'塞内加尔(I亚)',w:true}, t2:{f:'🇦🇹',n:'奥地利 (J亚)',w:false}},
+  {no:'R32-M18', t1:{f:'🇨🇴',n:'哥伦比亚(K亚)',w:false}, t2:{f:'🇭🇷',n:'克罗地亚(L亚)',w:true}},
+];
+
+const r16Matches = [
+  {no:'R16-M1', t1:{f:'🇧🇷',n:'巴西',w:true}, t2:{f:'🇺🇸',n:'美国',w:false}},
+  {no:'R16-M2', t1:{f:'🇩🇪',n:'德国',w:true}, t2:{f:'🇳🇱',n:'荷兰',w:false}},
+  {no:'R16-M3', t1:{f:'🇫🇷',n:'法国',w:true}, t2:{f:'🇸🇳',n:'塞内加尔',w:false}},
+  {no:'R16-M4', t1:{f:'🇦🇷',n:'阿根廷',w:true}, t2:{f:'🇭🇷',n:'克罗地亚',w:false}},
+  {no:'R16-M5', t1:{f:'🇪🇸',n:'西班牙',w:true}, t2:{f:'🇧🇪',n:'比利时',w:false}},
+  {no:'R16-M6', t1:{f:'🇵🇹',n:'葡萄牙',w:true}, t2:{f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'英格兰',w:false}},
+  {no:'R16-M7', t1:{f:'🇨🇭',n:'瑞士',w:false}, t2:{f:'🇲🇦',n:'摩洛哥',w:true}},
+  {no:'R16-M8', t1:{f:'🇲🇽',n:'墨西哥',w:false}, t2:{f:'🇯🇵',n:'日本',w:true}},
+];
+
+function buildGroups(){
+  const grid = document.getElementById('groups-grid');
+  groups.forEach((g,gi)=>{
+    const card = document.createElement('div');
+    card.className='group-card';
+    card.style.transitionDelay=(gi*60)+'ms';
+    const b = g.teams.find(t=>t.pred===1);
+    const colors=['#185FA5','#0F6E56','#993C1D'];
+    let inner = `<div class="gc-header">组 ${g.id}</div>`;
+    g.teams.forEach(t=>{
+      const badge = t.pred===1?'<span class="badge-1">冠</span>':t.pred===2?'<span class="badge-2">亚</span>':t.pred===3?'<span class="badge-3">3</span>':'';
+      inner+=`<div class="gc-team"><span class="flag">${t.f}</span><span class="team-name">${t.n}</span>${badge}</div>`;
+    });
+    card.innerHTML=inner;
+    grid.appendChild(card);
+    setTimeout(()=>card.classList.add('visible'),(gi*80)+200);
+  });
+}
+
+function buildR32(){
+  const grid = document.getElementById('r32-grid');
+  r32Matches.forEach((m,i)=>{
+    const card=document.createElement('div');
+    card.className='match-card';
+    card.style.transitionDelay=(i*40)+'ms';
+    card.innerHTML=`<div class="match-no">${m.no}</div>
+    <div class="match-teams">
+      <div class="match-team${m.t1.w?' winner':''}"><span class="flag">${m.t1.f}</span><span>${m.t1.n}</span>${m.t1.w?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-success)">✓</span>':''}</div>
+      <div class="vs-dot">vs</div>
+      <div class="match-team${m.t2.w?' winner':''}"><span class="flag">${m.t2.f}</span><span>${m.t2.n}</span>${m.t2.w?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-success)">✓</span>':''}</div>
+    </div>`;
+    grid.appendChild(card);
+    setTimeout(()=>card.classList.add('visible'),(i*50)+600);
+  });
+}
+
+function buildR16(){
+  const grid = document.getElementById('r16-grid');
+  r16Matches.forEach((m,i)=>{
+    const card=document.createElement('div');
+    card.className='r16-card';
+    card.style.transitionDelay=(i*60)+'ms';
+    card.innerHTML=`<div class="match-no">${m.no}</div>
+    <div class="match-teams">
+      <div class="match-team${m.t1.w?' winner':''}"><span class="flag">${m.t1.f}</span><span>${m.t1.n}</span>${m.t1.w?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-success)">✓进8强</span>':''}</div>
+      <div class="vs-dot">vs</div>
+      <div class="match-team${m.t2.w?' winner':''}"><span class="flag">${m.t2.f}</span><span>${m.t2.n}</span>${m.t2.w?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-success)">✓进8强</span>':''}</div>
+    </div>`;
+    grid.appendChild(card);
+    setTimeout(()=>card.classList.add('visible'),(i*70)+1200);
+  });
+}
+
+buildGroups();
+buildR32();
+buildR16();
+</script>
