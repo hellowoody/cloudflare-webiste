@@ -1,322 +1,566 @@
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --gold:#BA7517;--silver:#888780;--green:#1D9E75;
-  --blue-light:#E6F1FB;--blue:#185FA5;--blue-dark:#042C53;
-  --amber-light:#FAEEDA;--amber:#BA7517;
-  --teal-light:#E1F5EE;--teal:#0F6E56;
-  --coral-light:#FAECE7;--coral:#993C1D;
-  --purple-light:#EEEDFE;--purple:#534AB7;
-  --gray-light:#F1EFE8;--gray:#5F5E5A;
-  --bg:var(--color-background-primary);
-  --bg2:var(--color-background-secondary);
-  --txt:var(--color-text-primary);
-  --txt2:var(--color-text-secondary);
-  --bdr:var(--color-border-tertiary);
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500&display=swap');
+
+:root {
+  --de: #2D2580;
+  --de-light: #4B3FC7;
+  --de-bg: #EEEDFE;
+  --de-text: #26215C;
+  --fr: #0A3D7A;
+  --fr-light: #185FA5;
+  --fr-bg: #E6F1FB;
+  --fr-text: #042C53;
+  --gold: #9A6E00;
+  --gold-bg: #FFF8E6;
+  --win-bg: #EAF3DE;
+  --win-border: #639922;
+  --win-text: #27500A;
 }
-body{font-family:var(--font-sans,"Anthropic Sans",sans-serif);color:var(--txt);background:transparent}
-h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wc { font-family: 'Barlow', sans-serif; font-size: 12px; color: var(--color-text-primary); }
+.wc h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 700; letter-spacing: 0.05em;
+  text-align: center; padding: 16px 0 4px;
+}
+.wc .subtitle { text-align:center; font-size:11px; color:var(--color-text-secondary); padding-bottom:10px; }
 
-.page{padding:1.5rem 1rem 3rem;max-width:1100px;margin:0 auto}
-.hero{text-align:center;margin-bottom:2rem}
-.hero h1{font-size:22px;font-weight:500;margin-bottom:.3rem}
-.hero p{font-size:13px;color:var(--txt2)}
+/* half-area banner */
+.half-banner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px; margin: 0 8px 10px;
+}
+.half-card {
+  border-radius: 6px; padding: 7px 10px;
+  font-size: 10px; line-height: 1.6;
+  border: 0.5px solid var(--color-border-secondary);
+}
+.half-card strong { font-size: 11px; font-weight: 600; display:block; margin-bottom:2px; }
+.half-a { background: var(--de-bg); color: var(--de-text); border-color: var(--de-light); }
+.half-b { background: #FFF4E6; color: #633806; border-color: #EF9F27; }
+@media (prefers-color-scheme: dark) {
+  .half-a { background: #26215C; color: #CECBF6; border-color: #7F77DD; }
+  .half-b { background: #412402; color: #FAC775; border-color: #BA7517; }
+}
 
-/* -------- SECTION HEADERS -------- */
-.section-header{display:flex;align-items:center;gap:10px;margin:2rem 0 1rem;font-size:16px;font-weight:500}
-.section-badge{background:var(--color-background-info);color:var(--color-text-info);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.legend {
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+  padding:6px 12px 10px; border-bottom:0.5px solid var(--color-border-tertiary);
+}
+.leg { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--color-text-secondary); }
+.leg-dot { width:9px; height:9px; border-radius:2px; flex-shrink:0; }
 
-/* -------- GROUP CARDS -------- */
-.groups-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:1rem}
-.group-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--border-radius-lg,12px);padding:.75rem;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s,box-shadow .2s;cursor:default}
-.group-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08)}
-.group-card.visible{opacity:1;transform:translateY(0)}
-.gc-header{font-size:11px;font-weight:500;color:var(--txt2);letter-spacing:.05em;margin-bottom:.5rem;text-transform:uppercase}
-.gc-team{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:13px;border-bottom:0.5px solid var(--bdr);position:relative;overflow:hidden}
-.gc-team:last-child{border-bottom:none}
-.flag{font-size:16px;line-height:1}
-.team-name{flex:1;font-size:12.5px}
-.team-rank{font-size:10px;color:var(--txt2);white-space:nowrap}
-.badge-1{background:#BA751722;color:#BA7517;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:500}
-.badge-2{background:#53535522;color:#535355;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:500}
-.badge-3{background:#0F6E5622;color:#0F6E56;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:500}
+.phase {
+  font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:600;
+  letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--color-text-tertiary); text-align:center;
+  padding:12px 0 5px; border-top:0.5px solid var(--color-border-tertiary); margin-top:6px;
+}
 
-/* -------- RULES BOX -------- */
-.rules-box{background:var(--bg2);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;line-height:1.7;color:var(--txt2)}
-.rules-box b{color:var(--txt);font-weight:500}
+/* groups */
+.groups-grid {
+  display:grid; grid-template-columns:repeat(6,1fr); gap:5px; padding:0 8px 6px;
+}
+.grp-name {
+  font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700;
+  letter-spacing:0.1em; color:var(--color-text-tertiary); text-align:center; margin-bottom:3px;
+}
+.tc {
+  display:flex; align-items:center; gap:3px; padding:3px 5px; border-radius:3px;
+  margin-bottom:2px; border:0.5px solid var(--color-border-tertiary);
+  background:var(--color-background-primary); font-size:10px;
+  white-space:nowrap; overflow:hidden; transition:all 0.3s;
+}
+.tc .f { font-size:11px; flex-shrink:0; }
+.tc .n { overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0; font-size:10px; }
+.tc .r { font-size:8.5px; color:var(--color-text-tertiary); flex-shrink:0; }
+.tc.p1 { background:var(--color-background-info); border-color:var(--color-border-info); color:var(--color-text-info); font-weight:500; }
+.tc.p2 { background:var(--color-background-success); border-color:var(--color-border-success); color:var(--color-text-success); }
+.tc.p3 { background:var(--color-background-warning); border-color:var(--color-border-warning); color:var(--color-text-warning); font-size:9.5px; }
+.tc.de { background:var(--de); border-color:var(--de-light); color:#EEEDFE; font-weight:600; animation:pde 2s ease-in-out infinite; }
+.tc.fr { background:var(--fr); border-color:var(--fr-light); color:#E6F1FB; font-weight:600; animation:pfr 2s ease-in-out infinite; }
+@keyframes pde { 0%,100%{box-shadow:0 0 0 0 rgba(83,74,183,0)} 50%{box-shadow:0 0 0 2px rgba(83,74,183,.5)} }
+@keyframes pfr { 0%,100%{box-shadow:0 0 0 0 rgba(24,95,165,0)} 50%{box-shadow:0 0 0 2px rgba(24,95,165,.5)} }
 
-/* -------- FLOW ANIMATION -------- */
-.flow-wrap{position:relative;overflow:hidden;margin:1rem 0}
-svg.flow{display:block;width:100%;overflow:visible}
+/* KO matches */
+.ko-grid { display:grid; gap:7px; padding:0 8px 4px; }
+.ko-grid.r32 { grid-template-columns:repeat(4,1fr); }
+.ko-grid.r16 { grid-template-columns:repeat(4,1fr); }
+.ko-grid.qf  { grid-template-columns:repeat(4,1fr); }
+.ko-grid.sf  { grid-template-columns:repeat(2,1fr); }
+.ko-grid.fin { grid-template-columns:1fr; max-width:280px; margin:0 auto; }
 
-/* -------- R32 BRACKET -------- */
-.r32-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1rem}
-.match-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:10px;padding:.6rem .8rem;opacity:0;transform:translateX(-8px);transition:opacity .4s,transform .4s}
-.match-card.visible{opacity:1;transform:translateX(0)}
-.match-no{font-size:10px;color:var(--txt2);margin-bottom:.3rem}
-.match-teams{display:flex;flex-direction:column;gap:3px}
-.match-team{display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:6px;font-size:12.5px;transition:background .2s}
-.match-team.winner{background:var(--color-background-success);font-weight:500}
-.match-team .flag{font-size:14px}
-.vs-dot{text-align:center;font-size:10px;color:var(--txt2);padding:1px 0}
+.match {
+  border:0.5px solid var(--color-border-tertiary); border-radius:6px; overflow:hidden;
+  opacity:0; transform:translateY(5px);
+  transition:opacity 0.5s ease, transform 0.5s ease;
+  background:var(--color-background-primary);
+}
+.match.vis { opacity:1; transform:translateY(0); }
+.match-hd {
+  font-size:8.5px; font-weight:500; color:var(--color-text-tertiary);
+  background:var(--color-background-secondary); padding:2px 6px;
+  border-bottom:0.5px solid var(--color-border-tertiary);
+  letter-spacing:.04em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mteam {
+  display:flex; align-items:center; gap:4px; padding:4px 7px;
+  font-size:10px; color:var(--color-text-primary); background:var(--color-background-primary);
+}
+.mteam .mf { font-size:12px; flex-shrink:0; }
+.mteam .mn { overflow:hidden; text-overflow:ellipsis; flex:1; min-width:0; font-size:10px; }
+.mteam.de { background:var(--de); color:#EEEDFE; font-weight:600; }
+.mteam.fr { background:var(--fr); color:#E6F1FB; font-weight:600; }
+.mteam.win { background:var(--win-bg); color:var(--win-text); font-weight:500; }
+.mteam.dim { color:var(--color-text-tertiary); font-size:9.5px; }
+.msep { height:0.5px; background:var(--color-border-tertiary); }
 
-/* -------- R16 -------- */
-.r16-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.r16-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:10px;padding:.6rem .8rem;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
-.r16-card.visible{opacity:1;transform:translateY(0)}
+.match.clash {
+  border:1.5px solid var(--de-light);
+  animation:clash-border 3s ease-in-out infinite;
+}
+@keyframes clash-border { 0%,100%{border-color:var(--de-light)} 50%{border-color:var(--fr-light)} }
 
-/* -------- LEGEND -------- */
-.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--txt2);margin:1rem 0 .5rem}
-.leg-item{display:flex;align-items:center;gap:5px}
-.leg-dot{width:10px;height:10px;border-radius:50%}
+.match.sf-clash {
+  border:1.5px solid #EF9F27;
+  animation:sf-border 3s ease-in-out infinite;
+}
+@keyframes sf-border { 0%,100%{border-color:#BA7517} 50%{border-color:#EF9F27} }
 
-/* progress bar animation */
-@keyframes fillBar{from{width:0}to{width:var(--w,100%)}}
-.progress-fill{animation:fillBar 1.5s cubic-bezier(.4,0,.2,1) forwards}
+.match.final-match {
+  border:1.5px solid var(--gold);
+}
+.match-hd.final-hd {
+  background:var(--gold-bg); color:var(--gold); font-weight:600;
+  font-family:'Barlow Condensed',sans-serif; font-size:10px; letter-spacing:.08em;
+}
 
-/* pulse for champions */
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-.champ-pulse{animation:pulse 2s ease-in-out infinite}
+.note {
+  margin:5px 8px 0; padding:6px 10px;
+  background:var(--color-background-secondary);
+  border-radius:5px; border:0.5px solid var(--color-border-tertiary);
+  font-size:10px; line-height:1.5; color:var(--color-text-secondary);
+}
+.note strong { font-weight:500; color:var(--color-text-primary); }
 
-/* flowing arrow */
-@keyframes flowDash{to{stroke-dashoffset:-24}}
-.flow-line{stroke-dasharray:6 4;animation:flowDash 1.2s linear infinite}
+.clash-note {
+  margin:6px 8px 0; padding:7px 12px;
+  background:var(--de-bg); border-radius:5px; border:1px solid var(--de-light);
+  font-size:10.5px; line-height:1.5; color:var(--de-text); text-align:center;
+  opacity:0; transition:opacity 0.8s ease;
+}
+.clash-note.vis { opacity:1; }
 
-@media(max-width:540px){
-  .r32-grid,.r16-grid{grid-template-columns:1fr}
-  .groups-grid{grid-template-columns:repeat(2,1fr)}
+.sf-note {
+  margin:6px 8px 0; padding:7px 12px;
+  background:#FFF4E6; border-radius:5px; border:1px solid #EF9F27;
+  font-size:10.5px; line-height:1.5; color:#633806; text-align:center;
+  opacity:0; transition:opacity 0.8s ease;
+}
+.sf-note.vis { opacity:1; }
+@media (prefers-color-scheme: dark) {
+  .sf-note { background:#412402; color:#FAC775; border-color:#BA7517; }
+  .clash-note { background:#26215C; color:#CECBF6; border-color:#7F77DD; }
+}
+
+.trophy-row {
+  display:flex; align-items:center; justify-content:center;
+  gap:8px; padding:12px 8px 16px;
+  font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700;
+  color:var(--gold); opacity:0; transition:opacity 1s ease;
+}
+.trophy-row.vis { opacity:1; }
+
+.thirds-note {
+  font-size:9px; color:var(--color-text-tertiary);
+  text-align:center; padding:2px 8px 6px; font-style:italic;
 }
 </style>
 
-<h2 class="sr-only">2026 FIFA 世界杯从小组赛到32强再到16强的动态预测，包含12个小组分组、晋级规则说明、32强对阵和16强对阵</h2>
+<div class="wc">
+  <h1>2026 FIFA 世界杯完整预测对阵 v2</h1>
+  <div class="subtitle">严格遵循官方半区机制 · 小组赛 → 32强 → 16强 → 8强 → 半决赛 → 决赛</div>
 
-<div class="page">
-  <div class="hero">
-    <h1>🏆 2026 FIFA 世界杯 · 赛程预测</h1>
-    <p>48队 · 12小组 · 全新赛制 · 从小组赛到32强再到16强的完整推演</p>
-  </div>
-
-  <!-- RULES -->
-  <div class="rules-box">
-    <b>新赛制说明：</b>48支球队分为12个小组，每组4队各赛3场。<b>每组前2名</b>（共24队）直接晋级32强；<b>12组中成绩最好的8支第3名</b>也晋级，共32队参加淘汰赛。32强（Round of 32）是史上首次新增轮次，之后是16强、8强、4强直至决赛（7月19日 · 新泽西MetLife球场）。
-  </div>
-
-  <!-- GROUP STAGE -->
-  <div class="section-header">
-    <span>第一阶段</span>
-    <span class="section-badge">小组赛 · 12组 · 6月11–27日</span>
+  <!-- HALF AREA EXPLAINER -->
+  <div class="half-banner">
+    <div class="half-card half-a">
+      <strong>半区 A（法国侧）</strong>
+      包含：E组(德国) · F组(荷兰) · C组(巴西) · I组(法国) · A组(墨西哥) · L组(英格兰) · B组(加拿大) · K组(葡萄牙)<br>
+      <span style="font-size:9.5px;opacity:0.8">⚠️ 法国 + 英格兰 在同一半区 → 最早16强碰面</span>
+    </div>
+    <div class="half-card half-b">
+      <strong>半区 B（西班牙侧）</strong>
+      包含：H组(西班牙) · G组(比利时) · D组(美国) · J组(阿根廷) · K组对侧…<br>
+      <span style="font-size:9.5px;opacity:0.8">⚠️ 西班牙 + 阿根廷 在同一半区 → 最早16强碰面</span>
+    </div>
   </div>
 
   <div class="legend">
-    <div class="leg-item"><div class="leg-dot" style="background:#BA7517"></div>预测组冠</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#535355"></div>预测组亚</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#0F6E56"></div>预测最佳第3（晋级）</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--de)"></div>德国 (E组1)</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--fr)"></div>法国 (I组1)</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--color-background-info);border:0.5px solid var(--color-border-info)"></div>小组头名</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--color-background-success);border:0.5px solid var(--color-border-success)"></div>小组次名</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--win-bg);border:0.5px solid var(--win-border)"></div>预测晋级</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--gold-bg);border:0.5px solid var(--gold)"></div>决赛</div>
   </div>
 
-  <div class="groups-grid" id="groups-grid"></div>
+  <!-- ===== GROUPS ===== -->
+  <div class="phase">小组赛（12组）</div>
+  <div class="groups-grid">
+    <div>
+      <div class="grp-name">A组</div>
+      <div class="tc p1"><span class="f">🇲🇽</span><span class="n">墨西哥</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇰🇷</span><span class="n">韩国</span><span class="r">2</span></div>
+      <div class="tc"><span class="f">🇿🇦</span><span class="n">南非</span></div>
+      <div class="tc"><span class="f">🇨🇿</span><span class="n">捷克</span></div>
+    </div>
+    <div>
+      <div class="grp-name">B组</div>
+      <div class="tc p1"><span class="f">🇨🇦</span><span class="n">加拿大</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇨🇭</span><span class="n">瑞士</span><span class="r">2</span></div>
+      <div class="tc"><span class="f">🇶🇦</span><span class="n">卡塔尔</span></div>
+      <div class="tc p3"><span class="f">🇧🇦</span><span class="n">波黑</span><span class="r">?3</span></div>
+    </div>
+    <div>
+      <div class="grp-name">C组</div>
+      <div class="tc p1"><span class="f">🇧🇷</span><span class="n">巴西</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇲🇦</span><span class="n">摩洛哥</span><span class="r">2</span></div>
+      <div class="tc p3"><span class="f">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span><span class="n">苏格兰</span><span class="r">?3</span></div>
+      <div class="tc"><span class="f">🇭🇹</span><span class="n">海地</span></div>
+    </div>
+    <div>
+      <div class="grp-name">D组</div>
+      <div class="tc p1"><span class="f">🇺🇸</span><span class="n">美国</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇵🇾</span><span class="n">巴拉圭</span><span class="r">2</span></div>
+      <div class="tc"><span class="f">🇦🇺</span><span class="n">澳大利亚</span></div>
+      <div class="tc"><span class="f">🇹🇷</span><span class="n">土耳其</span></div>
+    </div>
+    <div>
+      <div class="grp-name">E组 🔵</div>
+      <div class="tc de"><span class="f">🇩🇪</span><span class="n">德国</span><span class="r">↑1</span></div>
+      <div class="tc p2"><span class="f">🇨🇮</span><span class="n">科特迪瓦</span><span class="r">2</span></div>
+      <div class="tc p3"><span class="f">🇪🇨</span><span class="n">厄瓜多尔</span><span class="r">?3</span></div>
+      <div class="tc"><span class="f">🇨🇼</span><span class="n">库拉索</span></div>
+    </div>
+    <div>
+      <div class="grp-name">F组</div>
+      <div class="tc p1"><span class="f">🇳🇱</span><span class="n">荷兰</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇯🇵</span><span class="n">日本</span><span class="r">2</span></div>
+      <div class="tc p3"><span class="f">🇹🇳</span><span class="n">突尼斯</span><span class="r">?3</span></div>
+      <div class="tc"><span class="f">🇸🇪</span><span class="n">瑞典</span></div>
+    </div>
+    <div>
+      <div class="grp-name">G组</div>
+      <div class="tc p1"><span class="f">🇧🇪</span><span class="n">比利时</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇪🇬</span><span class="n">埃及</span><span class="r">2</span></div>
+      <div class="tc"><span class="f">🇮🇷</span><span class="n">伊朗</span></div>
+      <div class="tc"><span class="f">🇳🇿</span><span class="n">新西兰</span></div>
+    </div>
+    <div>
+      <div class="grp-name">H组</div>
+      <div class="tc p1"><span class="f">🇪🇸</span><span class="n">西班牙</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇺🇾</span><span class="n">乌拉圭</span><span class="r">2</span></div>
+      <div class="tc"><span class="f">🇸🇦</span><span class="n">沙特</span></div>
+      <div class="tc"><span class="f">🇨🇻</span><span class="n">佛得角</span></div>
+    </div>
+    <div>
+      <div class="grp-name">I组 🔵</div>
+      <div class="tc fr"><span class="f">🇫🇷</span><span class="n">法国</span><span class="r">↑1</span></div>
+      <div class="tc p2"><span class="f">🇸🇳</span><span class="n">塞内加尔</span><span class="r">2</span></div>
+      <div class="tc p3"><span class="f">🇳🇴</span><span class="n">挪威</span><span class="r">?3</span></div>
+      <div class="tc"><span class="f">🇮🇶</span><span class="n">伊拉克</span></div>
+    </div>
+    <div>
+      <div class="grp-name">J组</div>
+      <div class="tc p1"><span class="f">🇦🇷</span><span class="n">阿根廷</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇦🇹</span><span class="n">奥地利</span><span class="r">2</span></div>
+      <div class="tc"><span class="f">🇩🇿</span><span class="n">阿尔及</span></div>
+      <div class="tc"><span class="f">🇯🇴</span><span class="n">约旦</span></div>
+    </div>
+    <div>
+      <div class="grp-name">K组</div>
+      <div class="tc p1"><span class="f">🇵🇹</span><span class="n">葡萄牙</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇨🇴</span><span class="n">哥伦比亚</span><span class="r">2</span></div>
+      <div class="tc"><span class="f">🇺🇿</span><span class="n">乌兹别克</span></div>
+      <div class="tc"><span class="f">🇯🇲</span><span class="n">牙买加</span></div>
+    </div>
+    <div>
+      <div class="grp-name">L组</div>
+      <div class="tc p1"><span class="f">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span><span class="n">英格兰</span><span class="r">1</span></div>
+      <div class="tc p2"><span class="f">🇭🇷</span><span class="n">克罗地亚</span><span class="r">2</span></div>
+      <div class="tc"><span class="f">🇵🇦</span><span class="n">巴拿马</span></div>
+      <div class="tc"><span class="f">🇬🇭</span><span class="n">加纳</span></div>
+    </div>
+  </div>
+  <div class="thirds-note">?3 = 候选第三名晋级席（共8席，赛后成绩排定）· 🔵 = 德国/法国所在组</div>
 
-  <!-- FLOW ARROW -->
-  <div class="flow-wrap" style="height:60px">
-    <svg class="flow" viewBox="0 0 600 60" xmlns="http://www.w3.org/2000/svg">
-      <defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
-      <text x="300" y="16" text-anchor="middle" fill="var(--txt2)" font-size="11" font-family="var(--font-sans)">每组前2名 + 8支最佳第3名 = 32支球队进入淘汰赛</text>
-      <line x1="300" y1="22" x2="300" y2="48" stroke="var(--color-text-info)" stroke-width="1.5" class="flow-line" marker-end="url(#fa)"/>
-    </svg>
+  <!-- ===== R32 ===== -->
+  <div class="phase">32强（Round of 32）· 官方场次编号</div>
+  <div class="ko-grid r32">
+    <div class="match" id="m74">
+      <div class="match-hd">74 · 6/29 · 波士顿</div>
+      <div class="mteam de"><span class="mf">🇩🇪</span><span class="mn">德国 (1E)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">第三名·ABCDF</span></div>
+    </div>
+    <div class="match" id="m77">
+      <div class="match-hd">77 · 6/30 · 纽约/NJ</div>
+      <div class="mteam fr"><span class="mf">🇫🇷</span><span class="mn">法国 (1I)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">第三名·CDFGH</span></div>
+    </div>
+    <div class="match" id="m73">
+      <div class="match-hd">73 · 6/28 · 洛杉矶</div>
+      <div class="mteam win"><span class="mf">🇰🇷</span><span class="mn">韩国 (2A)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇨🇭 瑞士 (2B)</span></div>
+    </div>
+    <div class="match" id="m75">
+      <div class="match-hd">75 · 6/30 · 蒙特雷</div>
+      <div class="mteam win"><span class="mf">🇳🇱</span><span class="mn">荷兰 (1F)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇲🇦 摩洛哥 (2C)</span></div>
+    </div>
+    <div class="match" id="m76">
+      <div class="match-hd">76 · 6/29 · 休斯顿</div>
+      <div class="mteam win"><span class="mf">🇧🇷</span><span class="mn">巴西 (1C)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇯🇵 日本 (2F)</span></div>
+    </div>
+    <div class="match" id="m78">
+      <div class="match-hd">78 · 6/30 · 达拉斯</div>
+      <div class="mteam win"><span class="mf">🇸🇳</span><span class="mn">塞内加尔(2I)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇨🇮 科特迪瓦(2E)</span></div>
+    </div>
+    <div class="match" id="m79">
+      <div class="match-hd">79 · 7/1 · 墨西哥城</div>
+      <div class="mteam win"><span class="mf">🇲🇽</span><span class="mn">墨西哥 (1A)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">第三名·CEFHI</span></div>
+    </div>
+    <div class="match" id="m80">
+      <div class="match-hd">80 · 7/1 · 达拉斯</div>
+      <div class="mteam win"><span class="mf">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span><span class="mn">英格兰 (1L)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">第三名·EHIJK</span></div>
+    </div>
+    <div class="match" id="m84">
+      <div class="match-hd">84 · 7/2 · 洛杉矶</div>
+      <div class="mteam win"><span class="mf">🇪🇸</span><span class="mn">西班牙 (1H)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇦🇹 奥地利 (2J)</span></div>
+    </div>
+    <div class="match" id="m82">
+      <div class="match-hd">82 · 7/1 · 西雅图</div>
+      <div class="mteam win"><span class="mf">🇧🇪</span><span class="mn">比利时 (1G)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">第三名·AEHIJ</span></div>
+    </div>
+    <div class="match" id="m86">
+      <div class="match-hd">86 · 7/2 · 达拉斯</div>
+      <div class="mteam win"><span class="mf">🇦🇷</span><span class="mn">阿根廷 (1J)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇺🇾 乌拉圭 (2H)</span></div>
+    </div>
+    <div class="match" id="m83">
+      <div class="match-hd">83 · 7/2 · 多伦多</div>
+      <div class="mteam win"><span class="mf">🇺🇸</span><span class="mn">美国 (1D)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇵🇾 巴拉圭 (2D)</span></div>
+    </div>
+    <div class="match" id="m87">
+      <div class="match-hd">87 · 7/3 · 亚特兰大</div>
+      <div class="mteam win"><span class="mf">🇵🇹</span><span class="mn">葡萄牙 (1K)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">第三名·DEIJL</span></div>
+    </div>
+    <div class="match" id="m85">
+      <div class="match-hd">85 · 7/3 · 西雅图</div>
+      <div class="mteam win"><span class="mf">🇨🇦</span><span class="mn">加拿大 (1B)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">第三名·EFGIJ</span></div>
+    </div>
+    <div class="match" id="m81">
+      <div class="match-hd">81 · 7/2 · 旧金山</div>
+      <div class="mteam win"><span class="mf">🇨🇴</span><span class="mn">哥伦比亚(2K)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇭🇷 克罗地亚(2L)</span></div>
+    </div>
+    <div class="match" id="m88">
+      <div class="match-hd">88 · 7/3 · 迈阿密</div>
+      <div class="mteam win"><span class="mf">🇪🇬</span><span class="mn">埃及 (2G)</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇨🇭 瑞士 (2B)</span></div>
+    </div>
   </div>
 
-  <!-- R32 -->
-  <div class="section-header">
-    <span>第二阶段</span>
-    <span class="section-badge">32强 Round of 32 · 6月28–7月3日</span>
+  <!-- ===== R16 ===== -->
+  <div class="phase">16强（Round of 16）· 7/4–7/7</div>
+  <div class="ko-grid r16">
+    <!-- 场次89 德国 vs 法国 -->
+    <div class="match clash" id="r89">
+      <div class="match-hd" style="background:var(--de-bg);color:var(--de-text);font-weight:600">🔥 场次89 · 半区A关键战</div>
+      <div class="mteam de"><span class="mf">🇩🇪</span><span class="mn">德国</span></div>
+      <div class="msep"></div>
+      <div class="mteam fr"><span class="mf">🇫🇷</span><span class="mn">法国</span></div>
+    </div>
+    <!-- 荷兰 vs 韩国 -->
+    <div class="match" id="r90">
+      <div class="match-hd">场次90 · 半区A</div>
+      <div class="mteam win"><span class="mf">🇳🇱</span><span class="mn">荷兰</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇰🇷 韩国</span></div>
+    </div>
+    <!-- 巴西 vs 塞内加尔 -->
+    <div class="match" id="r91">
+      <div class="match-hd">场次91 · 半区A</div>
+      <div class="mteam win"><span class="mf">🇧🇷</span><span class="mn">巴西</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇸🇳 塞内加尔</span></div>
+    </div>
+    <!-- 墨西哥 vs 英格兰 -->
+    <div class="match" id="r92">
+      <div class="match-hd">场次92 · 半区A</div>
+      <div class="mteam win"><span class="mf">🇫🇷</span><span class="mn">法国 ✓晋级</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">半区A另一场</span></div>
+    </div>
+    <!-- 西班牙 vs 比利时 -->
+    <div class="match" id="r93">
+      <div class="match-hd">场次93 · 半区B</div>
+      <div class="mteam win"><span class="mf">🇪🇸</span><span class="mn">西班牙</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇧🇪 比利时</span></div>
+    </div>
+    <!-- 阿根廷 vs 美国 -->
+    <div class="match" id="r94">
+      <div class="match-hd">场次94 · 半区B</div>
+      <div class="mteam win"><span class="mf">🇦🇷</span><span class="mn">阿根廷</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇺🇸 美国</span></div>
+    </div>
+    <!-- 葡萄牙 vs 哥伦比亚 -->
+    <div class="match" id="r95">
+      <div class="match-hd">场次95 · 半区B</div>
+      <div class="mteam win"><span class="mf">🇵🇹</span><span class="mn">葡萄牙</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇨🇴 哥伦比亚</span></div>
+    </div>
+    <!-- 加拿大 vs 埃及 -->
+    <div class="match" id="r96">
+      <div class="match-hd">场次96 · 半区B</div>
+      <div class="mteam win"><span class="mf">🇪🇸</span><span class="mn">西班牙 ✓晋级</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">半区B另一场</span></div>
+    </div>
   </div>
-  <p style="font-size:13px;color:var(--txt2);margin-bottom:1rem">组冠对阵最佳第3名，亚军相互对阵（同组球队至少到8强才可能相遇）。<b style="color:var(--txt)">粗体</b>为预测晋级者。</p>
-  <div class="r32-grid" id="r32-grid"></div>
 
-  <div class="flow-wrap" style="height:60px">
-    <svg class="flow" viewBox="0 0 600 60" xmlns="http://www.w3.org/2000/svg">
-      <defs><marker id="fb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
-      <text x="300" y="16" text-anchor="middle" fill="var(--txt2)" font-size="11" font-family="var(--font-sans)">32强胜者16队晋级16强</text>
-      <line x1="300" y1="22" x2="300" y2="48" stroke="var(--color-text-success)" stroke-width="1.5" class="flow-line" marker-end="url(#fb)"/>
-    </svg>
+  <div class="clash-note" id="clash-note">
+    <strong>🇩🇪 德国 vs 法国 🇫🇷 · 场次89（16强）</strong><br>
+    官方W74 vs W77预设对决，同属半区A。预测<strong>法国</strong>凭现役阵容深度优势晋级8强。
   </div>
 
-  <!-- R16 -->
-  <div class="section-header">
-    <span>第三阶段</span>
-    <span class="section-badge">16强 Round of 16 · 7月4–7日</span>
+  <!-- ===== QF ===== -->
+  <div class="phase">8强（Quarter Finals）· 7/9–7/11</div>
+  <div class="ko-grid qf">
+    <!-- QF-A1: 法国 vs 荷兰 -->
+    <div class="match" id="qf1">
+      <div class="match-hd">QF1 · 半区A上支</div>
+      <div class="mteam fr"><span class="mf">🇫🇷</span><span class="mn">法国</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇳🇱 荷兰</span></div>
+    </div>
+    <!-- QF-A2: 巴西 vs 墨西哥 -->
+    <div class="match" id="qf2">
+      <div class="match-hd">QF2 · 半区A下支</div>
+      <div class="mteam win"><span class="mf">🇧🇷</span><span class="mn">巴西</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇲🇽 墨西哥</span></div>
+    </div>
+    <!-- QF-B1: 西班牙 vs 阿根廷 -->
+    <div class="match" id="qf3">
+      <div class="match-hd">QF3 · 半区B上支</div>
+      <div class="mteam win"><span class="mf">🇪🇸</span><span class="mn">西班牙</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇦🇷 阿根廷</span></div>
+    </div>
+    <!-- QF-B2: 葡萄牙 vs 加拿大/埃及 -->
+    <div class="match" id="qf4">
+      <div class="match-hd">QF4 · 半区B下支</div>
+      <div class="mteam win"><span class="mf">🇵🇹</span><span class="mn">葡萄牙</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇺🇸 美国</span></div>
+    </div>
   </div>
-  <p style="font-size:13px;color:var(--txt2);margin-bottom:1rem">16强延续固定赛区制，左半区与右半区胜者在半决赛相遇。<b style="color:var(--txt)">粗体</b>为预测晋级8强者。</p>
-  <div class="r16-grid" id="r16-grid"></div>
 
-  <div style="margin-top:1.5rem;padding:1rem;background:var(--bg2);border-radius:12px;font-size:13px;color:var(--txt2);text-align:center">
-    🌟 预测<b style="color:var(--txt)">8强</b>：巴西、西班牙、法国、阿根廷、英格兰、葡萄牙、德国、荷兰 &nbsp;·&nbsp; 
-    🏆 预测<b style="color:var(--txt)">冠军</b>：<span class="champ-pulse" style="color:#BA7517;font-weight:500">🇧🇷 巴西</span>
+  <div class="note" style="margin:5px 8px 0">
+    <strong>8强半区说明：</strong>QF1+QF2在半区A，胜者决半决赛A席；QF3+QF4在半区B，胜者决半决赛B席。<strong>西班牙 vs 阿根廷</strong>在8强相遇（同属半区B，16强后最早碰面），不违反四强保护机制。
+  </div>
+
+  <!-- ===== SF ===== -->
+  <div class="phase">半决赛（Semi Finals）· 7/14–7/15</div>
+  <div class="ko-grid sf">
+    <!-- SF-A: 法国 vs 巴西 -->
+    <div class="match" id="sf1">
+      <div class="match-hd">SF1 · 7/14 · 达拉斯 · 半区A决战</div>
+      <div class="mteam fr"><span class="mf">🇫🇷</span><span class="mn">法国</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇧🇷 巴西</span></div>
+    </div>
+    <!-- SF-B: 西班牙 vs 葡萄牙 -->
+    <div class="match sf-clash" id="sf2">
+      <div class="match-hd" style="background:#FFF4E6;color:#633806;font-weight:600">🔥 SF2 · 7/15 · 亚特兰大 · 半区B决战</div>
+      <div class="mteam win"><span class="mf">🇪🇸</span><span class="mn">西班牙</span></div>
+      <div class="msep"></div>
+      <div class="mteam dim"><span class="mn">🇵🇹 葡萄牙</span></div>
+    </div>
+  </div>
+
+  <div class="sf-note" id="sf-note">
+    <strong>法国 vs 西班牙 只能在此处相遇 ✓</strong><br>
+    两队分属不同半区，严格遵循FIFA四强保护机制，最早在<strong>半决赛</strong>碰面。预测<strong>法国</strong>晋级决赛。
+  </div>
+
+  <!-- ===== FINAL ===== -->
+  <div class="phase">⭐ 决赛（Final）· 7/19 · MetLife Stadium · 新泽西</div>
+  <div class="ko-grid fin">
+    <div class="match final-match" id="fin">
+      <div class="match-hd final-hd">⭐ 决赛 · 7月19日 · MetLife Stadium · 新泽西</div>
+      <div class="mteam fr" style="padding:7px 10px;font-size:12px"><span class="mf">🇫🇷</span><span class="mn">法国（半区A冠军）</span></div>
+      <div class="msep"></div>
+      <div class="mteam" style="padding:7px 10px;font-size:12px;color:var(--color-text-secondary)"><span class="mf">🇵🇹</span><span class="mn">葡萄牙（半区B冠军）</span></div>
+    </div>
+  </div>
+
+  <div class="trophy-row" id="trophy">
+    🏆 &nbsp;预测冠军：<span style="font-size:18px">🇫🇷</span>&nbsp; 法国 &nbsp;🏆
+  </div>
+
+  <div class="note" style="margin:0 8px 16px;border-top:0.5px solid var(--color-border-tertiary);padding-top:8px;">
+    <strong>修正说明：</strong>依照FIFA官方半区保护规则——法国(I组)与英格兰(L组)同属半区A，西班牙(H组)与阿根廷(J组)同属半区B。两对四强最早只能在<strong>半决赛</strong>相遇。决赛修正为<strong>法国 vs 葡萄牙</strong>（两队分属不同半区）。德国(E组)与法国同属半区A，16强对决路径不变。
   </div>
 </div>
 
 <script>
-const groups = [
-  {id:'A', teams:[
-    {f:'🇲🇽',n:'墨西哥',r:'第11',pred:1},
-    {f:'🇰🇷',n:'韩国',r:'第22',pred:2},
-    {f:'🇿🇦',n:'南非',r:'第58',pred:3},
-    {f:'🇨🇿',n:'捷克',r:'附加赛',pred:4}
-  ]},
-  {id:'B', teams:[
-    {f:'🇨🇭',n:'瑞士',r:'第19',pred:1},
-    {f:'🇨🇦',n:'加拿大',r:'第43',pred:2},
-    {f:'🇧🇦',n:'波黑',r:'第65',pred:3},
-    {f:'🇶🇦',n:'卡塔尔',r:'第70',pred:4}
-  ]},
-  {id:'C', teams:[
-    {f:'🇧🇷',n:'巴西',r:'第4',pred:1},
-    {f:'🇲🇦',n:'摩洛哥',r:'第14',pred:2},
-    {f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',n:'苏格兰',r:'第39',pred:3},
-    {f:'🇭🇹',n:'海地',r:'第84',pred:4}
-  ]},
-  {id:'D', teams:[
-    {f:'🇺🇸',n:'美国',r:'第16',pred:1},
-    {f:'🇹🇷',n:'土耳其',r:'第27',pred:2},
-    {f:'🇵🇾',n:'巴拉圭',r:'第61',pred:3},
-    {f:'🇦🇺',n:'澳大利亚',r:'附加赛',pred:4}
-  ]},
-  {id:'E', teams:[
-    {f:'🇩🇪',n:'德国',r:'第9',pred:1},
-    {f:'🇨🇮',n:'科特迪瓦',r:'第35',pred:2},
-    {f:'🇪🇨',n:'厄瓜多尔',r:'第36',pred:3},
-    {f:'🇨🇼',n:'库拉索',r:'第90',pred:4}
-  ]},
-  {id:'F', teams:[
-    {f:'🇳🇱',n:'荷兰',r:'第7',pred:1},
-    {f:'🇯🇵',n:'日本',r:'第15',pred:2},
-    {f:'🇸🇪',n:'瑞典',r:'附加赛',pred:3},
-    {f:'🇹🇳',n:'突尼斯',r:'第52',pred:4}
-  ]},
-  {id:'G', teams:[
-    {f:'🇧🇪',n:'比利时',r:'第3',pred:1},
-    {f:'🇮🇷',n:'伊朗',r:'第23',pred:2},
-    {f:'🇪🇬',n:'埃及',r:'第37',pred:3},
-    {f:'🇳🇿',n:'新西兰',r:'第93',pred:4}
-  ]},
-  {id:'H', teams:[
-    {f:'🇪🇸',n:'西班牙',r:'第2',pred:1},
-    {f:'🇺🇾',n:'乌拉圭',r:'第17',pred:2},
-    {f:'🇸🇦',n:'沙特',r:'第56',pred:3},
-    {f:'🇨🇻',n:'佛得角',r:'第78',pred:4}
-  ]},
-  {id:'I', teams:[
-    {f:'🇫🇷',n:'法国',r:'第1',pred:1},
-    {f:'🇸🇳',n:'塞内加尔',r:'第18',pred:2},
-    {f:'🇳🇴',n:'挪威',r:'第25',pred:3},
-    {f:'🇮🇶',n:'伊拉克',r:'附加赛',pred:4}
-  ]},
-  {id:'J', teams:[
-    {f:'🇦🇷',n:'阿根廷',r:'第5',pred:1},
-    {f:'🇦🇹',n:'奥地利',r:'第26',pred:2},
-    {f:'🇩🇿',n:'阿尔及利亚',r:'第46',pred:3},
-    {f:'🇯🇴',n:'约旦',r:'第87',pred:4}
-  ]},
-  {id:'K', teams:[
-    {f:'🇵🇹',n:'葡萄牙',r:'第6',pred:1},
-    {f:'🇨🇴',n:'哥伦比亚',r:'第13',pred:2},
-    {f:'🇺🇿',n:'乌兹别克',r:'第50',pred:3},
-    {f:'🇨🇩',n:'刚果(金)',r:'附加赛',pred:4}
-  ]},
-  {id:'L', teams:[
-    {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'英格兰',r:'第8',pred:1},
-    {f:'🇭🇷',n:'克罗地亚',r:'第10',pred:2},
-    {f:'🇬🇭',n:'加纳',r:'第60',pred:3},
-    {f:'🇵🇦',n:'巴拿马',r:'第76',pred:4}
-  ]}
+var seq = [
+  ['m74',100],['m77',200],['m73',300],['m75',380],
+  ['m76',460],['m78',540],['m79',620],['m80',700],
+  ['m84',780],['m82',860],['m86',940],['m83',1020],
+  ['m87',1100],['m85',1180],['m81',1260],['m88',1340],
+  ['r89',1520],['r90',1650],['r91',1780],['r92',1910],
+  ['r93',2040],['r94',2170],['r95',2300],['r96',2430],
+  ['clash-note',2550],
+  ['qf1',2750],['qf2',2880],['qf3',3010],['qf4',3140],
+  ['sf1',3400],['sf2',3550],
+  ['sf-note',3700],
+  ['fin',3950],['trophy',4250]
 ];
-
-const r32Matches = [
-  {no:'R32-M1', t1:{f:'🇲🇽',n:'墨西哥 (A冠)',w:true}, t2:{f:'🇧🇦',n:'波黑 (B第3)',w:false}},
-  {no:'R32-M2', t1:{f:'🇨🇭',n:'瑞士 (B冠)',w:true}, t2:{f:'🇨🇿',n:'捷克 (A第3)',w:false}},
-  {no:'R32-M3', t1:{f:'🇧🇷',n:'巴西 (C冠)',w:true}, t2:{f:'🇵🇾',n:'巴拉圭 (D第3)',w:false}},
-  {no:'R32-M4', t1:{f:'🇺🇸',n:'美国 (D冠)',w:true}, t2:{f:'🇭🇹',n:'海地 (C第3)',w:false}},
-  {no:'R32-M5', t1:{f:'🇩🇪',n:'德国 (E冠)',w:true}, t2:{f:'🇸🇪',n:'瑞典 (F第3)',w:false}},
-  {no:'R32-M6', t1:{f:'🇳🇱',n:'荷兰 (F冠)',w:true}, t2:{f:'🇪🇨',n:'厄瓜多尔(E第3)',w:false}},
-  {no:'R32-M7', t1:{f:'🇧🇪',n:'比利时 (G冠)',w:true}, t2:{f:'🇸🇦',n:'沙特 (H第3)',w:false}},
-  {no:'R32-M8', t1:{f:'🇪🇸',n:'西班牙 (H冠)',w:true}, t2:{f:'🇪🇬',n:'埃及 (G第3)',w:false}},
-  {no:'R32-M9', t1:{f:'🇫🇷',n:'法国 (I冠)',w:true}, t2:{f:'🇩🇿',n:'阿尔及利亚(J第3)',w:false}},
-  {no:'R32-M10', t1:{f:'🇦🇷',n:'阿根廷 (J冠)',w:true}, t2:{f:'🇮🇶',n:'伊拉克 (I第3)',w:false}},
-  {no:'R32-M11', t1:{f:'🇵🇹',n:'葡萄牙 (K冠)',w:true}, t2:{f:'🇬🇭',n:'加纳 (L第3)',w:false}},
-  {no:'R32-M12', t1:{f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'英格兰 (L冠)',w:true}, t2:{f:'🇺🇿',n:'乌兹别克(K第3)',w:false}},
-  {no:'R32-M13', t1:{f:'🇰🇷',n:'韩国 (A亚)',w:false}, t2:{f:'🇨🇦',n:'加拿大 (B亚)',w:true}},
-  {no:'R32-M14', t1:{f:'🇲🇦',n:'摩洛哥 (C亚)',w:true}, t2:{f:'🇹🇷',n:'土耳其 (D亚)',w:false}},
-  {no:'R32-M15', t1:{f:'🇨🇮',n:'科特迪瓦(E亚)',w:false}, t2:{f:'🇯🇵',n:'日本 (F亚)',w:true}},
-  {no:'R32-M16', t1:{f:'🇮🇷',n:'伊朗 (G亚)',w:false}, t2:{f:'🇺🇾',n:'乌拉圭 (H亚)',w:true}},
-  {no:'R32-M17', t1:{f:'🇸🇳',n:'塞内加尔(I亚)',w:true}, t2:{f:'🇦🇹',n:'奥地利 (J亚)',w:false}},
-  {no:'R32-M18', t1:{f:'🇨🇴',n:'哥伦比亚(K亚)',w:false}, t2:{f:'🇭🇷',n:'克罗地亚(L亚)',w:true}},
-];
-
-const r16Matches = [
-  {no:'R16-M1', t1:{f:'🇧🇷',n:'巴西',w:true}, t2:{f:'🇺🇸',n:'美国',w:false}},
-  {no:'R16-M2', t1:{f:'🇩🇪',n:'德国',w:true}, t2:{f:'🇳🇱',n:'荷兰',w:false}},
-  {no:'R16-M3', t1:{f:'🇫🇷',n:'法国',w:true}, t2:{f:'🇸🇳',n:'塞内加尔',w:false}},
-  {no:'R16-M4', t1:{f:'🇦🇷',n:'阿根廷',w:true}, t2:{f:'🇭🇷',n:'克罗地亚',w:false}},
-  {no:'R16-M5', t1:{f:'🇪🇸',n:'西班牙',w:true}, t2:{f:'🇧🇪',n:'比利时',w:false}},
-  {no:'R16-M6', t1:{f:'🇵🇹',n:'葡萄牙',w:true}, t2:{f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'英格兰',w:false}},
-  {no:'R16-M7', t1:{f:'🇨🇭',n:'瑞士',w:false}, t2:{f:'🇲🇦',n:'摩洛哥',w:true}},
-  {no:'R16-M8', t1:{f:'🇲🇽',n:'墨西哥',w:false}, t2:{f:'🇯🇵',n:'日本',w:true}},
-];
-
-function buildGroups(){
-  const grid = document.getElementById('groups-grid');
-  groups.forEach((g,gi)=>{
-    const card = document.createElement('div');
-    card.className='group-card';
-    card.style.transitionDelay=(gi*60)+'ms';
-    const b = g.teams.find(t=>t.pred===1);
-    const colors=['#185FA5','#0F6E56','#993C1D'];
-    let inner = `<div class="gc-header">组 ${g.id}</div>`;
-    g.teams.forEach(t=>{
-      const badge = t.pred===1?'<span class="badge-1">冠</span>':t.pred===2?'<span class="badge-2">亚</span>':t.pred===3?'<span class="badge-3">3</span>':'';
-      inner+=`<div class="gc-team"><span class="flag">${t.f}</span><span class="team-name">${t.n}</span>${badge}</div>`;
-    });
-    card.innerHTML=inner;
-    grid.appendChild(card);
-    setTimeout(()=>card.classList.add('visible'),(gi*80)+200);
-  });
-}
-
-function buildR32(){
-  const grid = document.getElementById('r32-grid');
-  r32Matches.forEach((m,i)=>{
-    const card=document.createElement('div');
-    card.className='match-card';
-    card.style.transitionDelay=(i*40)+'ms';
-    card.innerHTML=`<div class="match-no">${m.no}</div>
-    <div class="match-teams">
-      <div class="match-team${m.t1.w?' winner':''}"><span class="flag">${m.t1.f}</span><span>${m.t1.n}</span>${m.t1.w?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-success)">✓</span>':''}</div>
-      <div class="vs-dot">vs</div>
-      <div class="match-team${m.t2.w?' winner':''}"><span class="flag">${m.t2.f}</span><span>${m.t2.n}</span>${m.t2.w?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-success)">✓</span>':''}</div>
-    </div>`;
-    grid.appendChild(card);
-    setTimeout(()=>card.classList.add('visible'),(i*50)+600);
-  });
-}
-
-function buildR16(){
-  const grid = document.getElementById('r16-grid');
-  r16Matches.forEach((m,i)=>{
-    const card=document.createElement('div');
-    card.className='r16-card';
-    card.style.transitionDelay=(i*60)+'ms';
-    card.innerHTML=`<div class="match-no">${m.no}</div>
-    <div class="match-teams">
-      <div class="match-team${m.t1.w?' winner':''}"><span class="flag">${m.t1.f}</span><span>${m.t1.n}</span>${m.t1.w?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-success)">✓进8强</span>':''}</div>
-      <div class="vs-dot">vs</div>
-      <div class="match-team${m.t2.w?' winner':''}"><span class="flag">${m.t2.f}</span><span>${m.t2.n}</span>${m.t2.w?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-success)">✓进8强</span>':''}</div>
-    </div>`;
-    grid.appendChild(card);
-    setTimeout(()=>card.classList.add('visible'),(i*70)+1200);
-  });
-}
-
-buildGroups();
-buildR32();
-buildR16();
+seq.forEach(function(item){
+  setTimeout(function(){
+    var el=document.getElementById(item[0]);
+    if(el) el.classList.add('vis');
+  }, item[1]);
+});
 </script>
