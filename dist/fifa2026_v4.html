@@ -49,30 +49,15 @@ h1{font-size:18px;font-weight:500;text-align:center;margin-bottom:3px}
 .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;justify-content:center}
 .btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border:1px solid #ccc;border-radius:8px;cursor:pointer;font-size:13px;background:#fff;color:#1a1a1a;-webkit-tap-highlight-color:transparent}
 .btn.pri{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
-.btn.img{background:#0077b6;color:#fff;border-color:#0077b6}
 .badge-cnt{display:inline-flex;align-items:center;justify-content:center;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:500;background:#f0eeeb;color:#666}
 .badge-cnt.ok{background:#e8f4fb;color:#0066aa}
 
-/* ── 淘汰赛：垂直流 ── */
-.bracket-section{margin-bottom:16px}
-.bracket-section-title{font-size:11px;font-weight:600;color:#888;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;padding-left:2px}
-
-/* 32强：4列 */
-.r32-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-@media(max-width:500px){.r32-grid{grid-template-columns:repeat(2,1fr)}}
-
-/* 16强：2行 × 4列 */
-.r16-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-@media(max-width:500px){.r16-grid{grid-template-columns:repeat(2,1fr)}}
-
-/* 八强：4列 */
-.r8-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-@media(max-width:500px){.r8-grid{grid-template-columns:repeat(2,1fr)}}
-
-/* 四强：2列，决赛：1列 */
-.r4-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-width:400px;margin:0 auto}
-.rf-grid{display:grid;grid-template-columns:1fr;gap:6px;max-width:200px;margin:0 auto}
-
+/* bracket */
+.bracket-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -10px;padding:0 10px 8px}
+.bracket{display:flex;min-width:660px;gap:0}
+.rcol{display:flex;flex-direction:column;flex:1;min-width:0}
+.rlabel{font-size:9px;color:#aaa;text-align:center;padding:3px 2px 6px;font-weight:500;letter-spacing:.3px}
+.mcol{display:flex;flex-direction:column;flex:1;justify-content:space-around;gap:3px;padding:0 2px}
 .mbox{border:1px solid #e5e5e5;border-radius:8px;background:#fff;overflow:hidden}
 .mid-label{font-size:8px;color:#aaa;padding:2px 5px;background:#f5f5f5;border-bottom:1px solid #eee}
 .mteam{padding:4px 5px;display:flex;align-items:center;gap:4px;min-height:24px;cursor:pointer;transition:background .1s}
@@ -82,15 +67,11 @@ h1{font-size:18px;font-weight:500;text-align:center;margin-bottom:3px}
 .mteam.win:hover{background:#d4ecf7}
 .mfl{font-size:11px;line-height:1;flex-shrink:0}.mtn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
 .wtick{font-size:9px;color:#0077b6;flex-shrink:0}
-
+.conn{display:flex;flex-direction:column;justify-content:center;align-items:center;width:8px;flex-shrink:0}
+.conn-ln{flex:1;width:1px;background:#e5e5e5}
 .winner-box{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:20px;text-align:center;margin-top:12px}
 .trophy-big{font-size:36px;margin-bottom:6px}.win-flag{font-size:32px;margin-bottom:4px}
 .win-name{font-size:22px;font-weight:500;margin-bottom:4px}.win-sub{font-size:12px;color:#888}
-
-/* 图片预览区 */
-#img-preview-area{margin-top:16px;display:none}
-#img-preview-area img{width:100%;border-radius:10px;border:1px solid #e5e5e5;display:block}
-#img-preview-area .img-hint{font-size:11px;color:#888;text-align:center;margin-top:6px}
 </style>
 </head>
 <body>
@@ -127,19 +108,11 @@ h1{font-size:18px;font-weight:500;text-align:center;margin-bottom:3px}
 
 <div id="tab-bracket" class="section">
   <div class="info-box">直接点击球队行选为晋级（蓝色高亮=已晋级），再次点击可取消。</div>
-  <div id="bracket-view"></div>
+  <div class="bracket-wrap"><div class="bracket" id="bracket-view"></div></div>
   <div id="winner-display"></div>
   <div class="actions">
     <div class="btn" onclick="switchTab('thirds')">← 修改第三名</div>
     <div class="btn" onclick="resetBracket()">重置</div>
-    <div class="btn img" onclick="generateImage()">📸 生成路线图图片</div>
-  </div>
-  <div id="img-preview-area">
-    <img id="img-preview" src="" alt="淘汰赛路线图">
-    <p class="img-hint">长按图片（移动端）或右键另存为（电脑端）可保存图片</p>
-    <div class="actions" style="margin-top:8px">
-      <a id="img-download" class="btn pri" download="worldcup2026_bracket.png">⬇ 下载图片</a>
-    </div>
   </div>
 </div>
 </div>
@@ -156,7 +129,7 @@ let bracketWinners={};
 let matchups={};
 Object.keys(GROUPS).forEach(g=>groupRanks[g]=[...GROUPS[g]]);
 
-// ── THIRD-SLOT MATCHING ──
+// ── THIRD-SLOT MATCHING (匈牙利算法) ──
 const THIRD_SLOTS=[
   {match:74,groups:['A','B','C','D','F']},
   {match:77,groups:['C','D','F','G','H']},
@@ -167,8 +140,9 @@ const THIRD_SLOTS=[
   {match:85,groups:['E','F','G','I','J']},
   {match:87,groups:['D','E','I','J','L']},
 ];
-const N=THIRD_SLOTS.length;
+const N=THIRD_SLOTS.length; // 8
 
+// 匈牙利算法：给定selected数组，返回是否能完美匹配（每个slot分到不同的组）
 function hungarian(selected){
   const matchArr=new Array(N).fill(null);
   function dfs(g,vis){
@@ -181,10 +155,14 @@ function hungarian(selected){
     return false;
   }
   let cnt=0;
-  for(const g of selected){const vis=new Array(N).fill(false);if(dfs(g,vis))cnt++;}
+  for(const g of selected){
+    const vis=new Array(N).fill(false);
+    if(dfs(g,vis))cnt++;
+  }
   return cnt===Math.min(selected.length,N);
 }
 
+// 给定已选k个，判断加入候选g后是否「仍能通过继续选满8个完成完美匹配」
 function canCompleteWith(selected,g){
   const next=[...selected,g];
   if(next.length===8)return hungarian(next);
@@ -200,6 +178,7 @@ function canCompleteWith(selected,g){
   return tryFill(0,[]);
 }
 
+// 获取每个未选组的状态：'available' | 'disabled'
 function getThirdStatus(){
   const all='ABCDEFGHIJKL'.split('');
   const result={};
@@ -214,6 +193,7 @@ function getThirdStatus(){
   return result;
 }
 
+// 计算当前选定的实际匹配分配（用于展示）
 function computeAssignment(selected){
   const matchArr=new Array(N).fill(null);
   function dfs(g,vis){
@@ -274,8 +254,11 @@ function renderThirds(){
     const isDisabled=s==='disabled';
     const div=document.createElement('div');
     div.className='third-item '+(isSel?'sel':isDisabled?'disabled':'available');
+
+    // 找出该组第三名可以参加哪些场次
     const slots=THIRD_SLOTS.filter(sl=>sl.groups.includes(g)).map(sl=>'M'+sl.match);
     const slotStr=slots.join('、');
+
     div.innerHTML=`
       <span class="chk">${isSel?'✓':isDisabled?'×':''}</span>
       <span style="font-size:14px;line-height:1;flex-shrink:0">${t.flag}</span>
@@ -288,6 +271,8 @@ function renderThirds(){
     c.appendChild(div);
   });
   updateThirdCount();
+
+  // 提示信息
   const hint=document.getElementById('thirds-hint');
   if(selectedThirds.size===8){
     hint.textContent='✓ 已选满8支，匹配完成。';hint.style.color='#0077b6';
@@ -314,7 +299,9 @@ function goToBracket(){
 // ── BRACKET ──
 function getT(g,r){return pt(groupRanks[g][r-1]);}
 function buildMatchups(){
+  // 用匈牙利算法结果确定哪个第三名去哪场
   const assignment=computeAssignment([...selectedThirds]);
+  // assignment[i] = 第i个slot分配到的组，null表示未分配
   function getThirdForSlot(matchId){
     const idx=THIRD_SLOTS.findIndex(s=>s.match===matchId);
     const g=idx>=0?assignment[idx]:null;
@@ -341,288 +328,34 @@ function buildMatchups(){
   };
 }
 const DEPS={89:[73,75],90:[74,77],91:[76,78],92:[79,80],93:[83,84],94:[81,82],95:[86,88],96:[85,87],97:[89,90],98:[93,94],99:[91,92],100:[95,96],101:[97,98],102:[99,100],104:[101,102]};
-
-function resetBracket(){bracketWinners={};propagateAll();drawBracket();document.getElementById('winner-display').innerHTML='';document.getElementById('img-preview-area').style.display='none';}
-function propagateAll(){[89,90,91,92,93,94,95,96,97,98,99,100,101,102,104].forEach(mid=>{const[d1,d2]=DEPS[mid];if(!matchups[mid])matchups[mid]={};matchups[mid].home=bracketWinners[d1]||{name:'TBD',code:'TBD',flag:'❓'};matchups[mid].away=bracketWinners[d2]||{name:'TBD',code:'TBD',flag:'❓'};});}
 function renderBracket(){matchups=buildMatchups();bracketWinners={};propagateAll();drawBracket();}
-
-function mkBox(id){
-  const m=matchups[id]||{home:{name:'TBD',flag:'❓',code:'TBD'},away:{name:'TBD',flag:'❓',code:'TBD'}};
-  const w=bracketWinners[id];
-  const div=document.createElement('div');div.className='mbox';
-  div.innerHTML=`<div class="mid-label">M${id}</div>`;
-  [m.home,m.away].forEach(t=>{
-    const isWin=w&&t&&w.code===t.code&&w.code!=='TBD';
-    const row=document.createElement('div');row.className='mteam'+(isWin?' win':'');
-    row.innerHTML=`<span class="mfl">${t?t.flag:'❓'}</span><span class="mtn">${t?t.name:'TBD'}</span>${isWin?'<span class="wtick">✓</span>':''}`;
-    if(t&&t.code!=='TBD'){row.onclick=()=>{
-      bracketWinners[id]&&bracketWinners[id].code===t.code?delete bracketWinners[id]:bracketWinners[id]=t;
-      propagateAll();drawBracket();
-      const fw=bracketWinners[104];
-      document.getElementById('winner-display').innerHTML=fw&&fw.code!=='TBD'?`<div class="winner-box"><div class="trophy-big">🏆</div><div class="win-flag">${fw.flag}</div><div class="win-name">${fw.name}</div><div class="win-sub">2026 FIFA 世界杯冠军</div></div>`:'';
-      document.getElementById('img-preview-area').style.display='none';
-    };}
-    div.appendChild(row);
-  });
-  return div;
-}
-
-function makeGrid(cls,ids){
-  const grid=document.createElement('div');grid.className=cls;
-  ids.forEach(id=>grid.appendChild(mkBox(id)));
-  return grid;
-}
-
-function section(title,gridCls,ids){
-  const sec=document.createElement('div');sec.className='bracket-section';
-  sec.innerHTML=`<div class="bracket-section-title">${title}</div>`;
-  sec.appendChild(makeGrid(gridCls,ids));
-  return sec;
-}
-
+function resetBracket(){bracketWinners={};propagateAll();drawBracket();document.getElementById('winner-display').innerHTML='';}
+function propagateAll(){[89,90,91,92,93,94,95,96,97,98,99,100,101,102,104].forEach(mid=>{const[d1,d2]=DEPS[mid];if(!matchups[mid])matchups[mid]={};matchups[mid].home=bracketWinners[d1]||{name:'TBD',code:'TBD',flag:'❓'};matchups[mid].away=bracketWinners[d2]||{name:'TBD',code:'TBD',flag:'❓'};});}
 function drawBracket(){
   const v=document.getElementById('bracket-view');v.innerHTML='';
-
-  // 32强：4列，两行（8+8）
-  const s32=document.createElement('div');s32.className='bracket-section';
-  s32.innerHTML='<div class="bracket-section-title">32强（第一轮）</div>';
-  const g32=document.createElement('div');g32.className='r32-grid';
-  [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88].forEach(id=>g32.appendChild(mkBox(id)));
-  s32.appendChild(g32);v.appendChild(s32);
-
-  // 16强：2行×4列（关键改动）
-  const s16=document.createElement('div');s16.className='bracket-section';
-  s16.innerHTML='<div class="bracket-section-title">16强</div>';
-  const g16=document.createElement('div');g16.className='r16-grid';
-  [89,90,91,92,93,94,95,96].forEach(id=>g16.appendChild(mkBox(id)));
-  s16.appendChild(g16);v.appendChild(s16);
-
-  // 八强：4列
-  v.appendChild(section('八强','r8-grid',[97,98,99,100]));
-  // 四强：2列
-  v.appendChild(section('四强','r4-grid',[101,102]));
-  // 决赛：1列
-  v.appendChild(section('决赛 🏆','rf-grid',[104]));
-}
-
-// ── 生成路线图图片 ──
-function generateImage(){
-  const canvas=document.createElement('canvas');
-  const dpr=window.devicePixelRatio||1;
-  const W=900,PAD=24,ROW_H=52,CELL_W=160,GAP=14;
-
-  // 各轮配置
-  const rounds=[
-    {label:'32强',ids:[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88],cols:4},
-    {label:'16强',ids:[89,90,91,92,93,94,95,96],cols:4},
-    {label:'八强',ids:[97,98,99,100],cols:4},
-    {label:'四强',ids:[101,102],cols:2},
-    {label:'决赛 🏆',ids:[104],cols:1},
-  ];
-
-  // 计算各块高度
-  const TITLE_H=22,MATCH_H=56,ROUND_PAD=14;
-  let totalH=PAD;
-  const roundMetrics=rounds.map(r=>{
-    const rows=Math.ceil(r.ids.length/r.cols);
-    const blockH=TITLE_H+rows*(MATCH_H+GAP)-GAP+ROUND_PAD;
-    const start=totalH;
-    totalH+=blockH+14;
-    return{...r,rows,blockH,start};
-  });
-  totalH+=PAD;
-
-  canvas.width=W*dpr;
-  canvas.height=totalH*dpr;
-  canvas.style.width=W+'px';
-  canvas.style.height=totalH+'px';
-  const ctx=canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-
-  // 背景
-  ctx.fillStyle='#f5f5f3';
-  ctx.fillRect(0,0,W,totalH);
-
-  // 标题
-  ctx.fillStyle='#1a1a1a';
-  ctx.font=`600 ${16*1}px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
-  ctx.textAlign='center';
-  ctx.fillText('🏆 2026 FIFA 世界杯 淘汰赛路线图',W/2,PAD-4);
-
-  roundMetrics.forEach(r=>{
-    let y=r.start;
-
-    // 轮次标题
-    ctx.fillStyle='#999';
-    ctx.font=`500 11px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
-    ctx.textAlign='left';
-    ctx.fillText(r.label.toUpperCase(),PAD,y+15);
-    y+=TITLE_H;
-
-    // 计算这轮每列宽度
-    const usableW=W-PAD*2;
-    const totalGap=GAP*(r.cols-1);
-    const cellW=(usableW-totalGap)/r.cols;
-    // 居中偏移（四强、决赛）
-    const totalUsed=cellW*r.cols+GAP*(r.cols-1);
-    const offsetX=PAD+(usableW-totalUsed)/2;
-
-    r.ids.forEach((id,idx)=>{
-      const col=idx%r.cols;
-      const row=Math.floor(idx/r.cols);
-      const x=offsetX+col*(cellW+GAP);
-      const cy=y+row*(MATCH_H+GAP);
-
-      const m=matchups[id]||{home:{name:'TBD',flag:'❓',code:'TBD'},away:{name:'TBD',flag:'❓',code:'TBD'}};
-      const w=bracketWinners[id];
-
-      // 卡片背景
-      ctx.fillStyle='#fff';
-      ctx.beginPath();
-      roundRect(ctx,x,cy,cellW,MATCH_H,8);
-      ctx.fill();
-
-      // 卡片边框
-      ctx.strokeStyle='#e5e5e5';
-      ctx.lineWidth=1;
-      ctx.beginPath();
-      roundRect(ctx,x,cy,cellW,MATCH_H,8);
-      ctx.stroke();
-
-      // 场次标签
-      ctx.fillStyle='#bbb';
-      ctx.font=`400 9px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
-      ctx.textAlign='left';
-      ctx.fillText('M'+id,x+6,cy+10);
-
-      // 分隔线（在中间）
-      ctx.strokeStyle='#eee';
-      ctx.lineWidth=1;
-      ctx.beginPath();
-      ctx.moveTo(x+1,cy+MATCH_H/2);
-      ctx.lineTo(x+cellW-1,cy+MATCH_H/2);
-      ctx.stroke();
-
-      // 绘制两支队伍
-      [m.home,m.away].forEach((t,ti)=>{
-        if(!t)return;
-        const ty=cy+(ti===0?13:13+MATCH_H/2);
-        const isWin=w&&t&&w.code===t.code&&w.code!=='TBD';
-
-        // 胜者背景
-        if(isWin){
-          ctx.fillStyle='#e8f4fb';
-          if(ti===0){
-            ctx.beginPath();
-            ctx.moveTo(x+1,cy+12);
-            ctx.lineTo(x+cellW-1,cy+12);
-            ctx.lineTo(x+cellW-1,cy+MATCH_H/2-1);
-            ctx.lineTo(x+1,cy+MATCH_H/2-1);
-            ctx.closePath();
-            ctx.fill();
-          } else {
-            ctx.beginPath();
-            ctx.moveTo(x+1,cy+MATCH_H/2+1);
-            ctx.lineTo(x+cellW-1,cy+MATCH_H/2+1);
-            ctx.lineTo(x+cellW-1,cy+MATCH_H-1);
-            ctx.moveTo(x+1,cy+MATCH_H/2+1);
-            ctx.lineTo(x+1,cy+MATCH_H-1);
-            ctx.fill();
-            // 下方圆角覆盖
-            ctx.fillStyle='#e8f4fb';
-            ctx.beginPath();
-            roundRectBottom(ctx,x+1,cy+MATCH_H/2+1,cellW-2,MATCH_H/2-2,7);
-            ctx.fill();
-          }
-        }
-
-        // emoji旗帜（作为文字）
-        ctx.font=`12px serif`;
-        ctx.textAlign='left';
-        ctx.fillStyle='#1a1a1a';
-        const flagText=t.flag.length<=2?t.flag:'🏳';
-        ctx.fillText(flagText,x+6,ty+10);
-
-        // 队名
-        ctx.font=isWin?`600 11px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`:`400 11px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
-        ctx.fillStyle=isWin?'#005f8e':'#1a1a1a';
-        ctx.textAlign='left';
-        const maxW=cellW-42;
-        let name=t.name;
-        // 截断过长队名
-        while(ctx.measureText(name).width>maxW&&name.length>1)name=name.slice(0,-1);
-        if(name!==t.name)name=name.slice(0,-1)+'…';
-        ctx.fillText(name,x+24,ty+10);
-
-        // 胜者勾
-        if(isWin){
-          ctx.fillStyle='#0077b6';
-          ctx.font=`bold 10px sans-serif`;
-          ctx.textAlign='right';
-          ctx.fillText('✓',x+cellW-6,ty+10);
-        }
-      });
+  function mkBox(id){
+    const m=matchups[id]||{home:{name:'TBD',flag:'❓',code:'TBD'},away:{name:'TBD',flag:'❓',code:'TBD'}};
+    const w=bracketWinners[id];
+    const div=document.createElement('div');div.className='mbox';
+    div.innerHTML=`<div class="mid-label">M${id}</div>`;
+    [m.home,m.away].forEach(t=>{
+      const isWin=w&&t&&w.code===t.code&&w.code!=='TBD';
+      const row=document.createElement('div');row.className='mteam'+(isWin?' win':'');
+      row.innerHTML=`<span class="mfl">${t?t.flag:'❓'}</span><span class="mtn">${t?t.name:'TBD'}</span>${isWin?'<span class="wtick">✓</span>':''}`;
+      if(t&&t.code!=='TBD'){row.onclick=()=>{bracketWinners[id]&&bracketWinners[id].code===t.code?delete bracketWinners[id]:bracketWinners[id]=t;propagateAll();drawBracket();const fw=bracketWinners[104];document.getElementById('winner-display').innerHTML=fw&&fw.code!=='TBD'?`<div class="winner-box"><div class="trophy-big">🏆</div><div class="win-flag">${fw.flag}</div><div class="win-name">${fw.name}</div><div class="win-sub">2026 FIFA 世界杯冠军</div></div>`:'';};}
+      div.appendChild(row);
     });
-  });
-
-  // 冠军展示
-  const fw=bracketWinners[104];
-  if(fw&&fw.code!=='TBD'){
-    const bx=PAD,by=totalH-PAD-40,bw=W-PAD*2,bh=36;
-    ctx.fillStyle='#fff9e6';
-    ctx.beginPath();
-    roundRect(ctx,bx,by,bw,bh,8);
-    ctx.fill();
-    ctx.strokeStyle='#F9C74F';
-    ctx.lineWidth=1.5;
-    ctx.beginPath();
-    roundRect(ctx,bx,by,bw,bh,8);
-    ctx.stroke();
-    ctx.font=`600 13px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
-    ctx.fillStyle='#a07800';
-    ctx.textAlign='center';
-    ctx.fillText(`🏆 冠军：${fw.flag} ${fw.name}`,W/2,by+24);
+    return div;
   }
-
-  // 水印
-  ctx.font=`400 9px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
-  ctx.fillStyle='#ccc';
-  ctx.textAlign='right';
-  ctx.fillText('2026 世界杯预测器',W-PAD,totalH-6);
-
-  const dataURL=canvas.toDataURL('image/png');
-  document.getElementById('img-preview').src=dataURL;
-  document.getElementById('img-download').href=dataURL;
-  const area=document.getElementById('img-preview-area');
-  area.style.display='block';
-  area.scrollIntoView({behavior:'smooth',block:'start'});
+  function col(label,ids){const d=document.createElement('div');d.className='rcol';d.innerHTML=`<div class="rlabel">${label}</div>`;const mc=document.createElement('div');mc.className='mcol';ids.forEach(id=>mc.appendChild(mkBox(id)));d.appendChild(mc);return d;}
+  function conn(){const d=document.createElement('div');d.className='conn';d.innerHTML='<div class="conn-ln"></div>';return d;}
+  v.appendChild(col('32强',[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88]));
+  v.appendChild(conn());v.appendChild(col('16强',[89,90,91,92,93,94,95,96]));
+  v.appendChild(conn());v.appendChild(col('八强',[97,98,99,100]));
+  v.appendChild(conn());v.appendChild(col('四强',[101,102]));v.appendChild(conn());
+  const fc=document.createElement('div');fc.className='rcol';fc.innerHTML='<div class="rlabel">决赛</div>';
+  const fm=document.createElement('div');fm.className='mcol';fm.appendChild(mkBox(104));fc.appendChild(fm);v.appendChild(fc);
 }
-
-// Canvas 圆角矩形辅助
-function roundRect(ctx,x,y,w,h,r){
-  ctx.moveTo(x+r,y);
-  ctx.lineTo(x+w-r,y);
-  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r);
-  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h);
-  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r);
-  ctx.quadraticCurveTo(x,y,x+r,y);
-  ctx.closePath();
-}
-function roundRectBottom(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x,y);
-  ctx.lineTo(x+w,y);
-  ctx.lineTo(x+w,y+h-r);
-  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h);
-  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y);
-  ctx.closePath();
-}
-
 function switchTab(name){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['groups','thirds','bracket'][i]===name));
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
