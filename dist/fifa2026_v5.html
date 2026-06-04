@@ -146,34 +146,7 @@ h1{font-size:18px;font-weight:500;text-align:center;margin-bottom:3px}
 
 <script>
 const GROUPS={A:["墨西哥|MEX","南非|RSA","韩国|KOR","捷克|CZE"],B:["加拿大|CAN","波黑|BIH","卡塔尔|QAT","瑞士|SUI"],C:["巴西|BRA","摩洛哥|MAR","海地|HAI","苏格兰|SCO"],D:["美国|USA","巴拉圭|PAR","澳大利亚|AUS","土耳其|TUR"],E:["德国|GER","库拉索|CUW","科特迪瓦|CIV","厄瓜多尔|ECU"],F:["荷兰|NED","日本|JPN","瑞典|SWE","突尼斯|TUN"],G:["比利时|BEL","埃及|EGY","伊朗|IRN","新西兰|NZL"],H:["西班牙|ESP","佛得角|CPV","沙特阿拉伯|KSA","乌拉圭|URU"],I:["法国|FRA","塞内加尔|SEN","伊拉克|IRQ","挪威|NOR"],J:["阿根廷|ARG","阿尔及利亚|ALG","奥地利|AUT","约旦|JOR"],K:["葡萄牙|POR","刚果民主共和国|COD","乌兹别克斯坦|UZB","哥伦比亚|COL"],L:["英格兰|ENG","克罗地亚|CRO","加纳|GHA","巴拿马|PAN"]};
-const FLAGS={MEX:"🇲🇽",RSA:"🇿🇦",KOR:"🇰🇷",CZE:"🇨🇿",CAN:"🇨🇦",BIH:"🇧🇦",QAT:"🇶🇦",SUI:"🇨🇭",BRA:"🇧🇷",MAR:"🇲🇦",HAI:"🇭🇹",SCO:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",USA:"🇺🇸",PAR:"🇵🇾",AUS:"🇦🇺",TUR:"🇹🇷",GER:"🇩🇪",CUW:"🇨🇼",CIV:"🇨🇮",ECU:"🇪🇨",NED:"🇳🇱",JPN:"🇯🇵",SWE:"🇸🇪",TUN:"🇹🇳",BEL:"🇧🇪",EGY:"🇪🇬",IRN:"🇮🇷",NZL:"🇳🇿",ESP:"🇪🇸",CPV:"🇨🇻",KSA:"🇸🇦",URU:"🇺🇾",FRA:"🇫🇷",SEN:"🇸🇳",IRQ:"🇮🇶",NOR:"🇳🇴",ARG:"🇦🇷",ALG:"🇩🇿",AUT:"🇦🇹",JOR:"🇯🇴",POR:"🇵🇹",COD:"🇨🇩",UZB:"🇺🇿",COL:"🇨🇴",ENG:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",CRO:"🇭🇷",GHA:"🇬🇭",PAN:"🇵🇦"};
-// Canvas用SVG旗帜：subdivision flag在Canvas中渲染差，改用SVG手绘
-const CANVAS_FLAGS={
-  ENG:'svg:eng', // 英格兰：白底红十字
-  SCO:'svg:sco', // 苏格兰：蓝底白X
-};
-function drawFlagOnCanvas(ctx,code,x,y,size){
-  const s=size||14;
-  if(code==='ENG'){
-    // 英格兰：白底+红色圣乔治十字
-    ctx.fillStyle='#fff';ctx.strokeStyle='#ccc';ctx.lineWidth=0.5;
-    ctx.beginPath();ctx.rect(x,y-s*0.75,s,s);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#CF142B';
-    ctx.fillRect(x+s*0.4,y-s*0.75,s*0.2,s); // 竖
-    ctx.fillRect(x,y-s*0.35,s,s*0.2);        // 横
-    return true;
-  }
-  if(code==='SCO'){
-    // 苏格兰：深蓝底+白色X形（圣安德鲁斯十字）
-    ctx.fillStyle='#003DA5';
-    ctx.beginPath();ctx.rect(x,y-s*0.75,s,s);ctx.fill();
-    ctx.strokeStyle='#fff';ctx.lineWidth=s*0.22;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(x,y-s*0.75);ctx.lineTo(x+s,y-s*0.75+s);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(x+s,y-s*0.75);ctx.lineTo(x,y-s*0.75+s);ctx.stroke();
-    return true;
-  }
-  return false;
-}
+const FLAGS={MEX:"🇲🇽",RSA:"🇿🇦",KOR:"🇰🇷",CZE:"🇨🇿",CAN:"🇨🇦",BIH:"🇧🇦",QAT:"🇶🇦",SUI:"🇨🇭",BRA:"🇧🇷",MAR:"🇲🇦",HAI:"🇭🇹",SCO:"sc",USA:"🇺🇸",PAR:"🇵🇾",AUS:"🇦🇺",TUR:"🇹🇷",GER:"🇩🇪",CUW:"🇨🇼",CIV:"🇨🇮",ECU:"🇪🇨",NED:"🇳🇱",JPN:"🇯🇵",SWE:"🇸🇪",TUN:"🇹🇳",BEL:"🇧🇪",EGY:"🇪🇬",IRN:"🇮🇷",NZL:"🇳🇿",ESP:"🇪🇸",CPV:"🇨🇻",KSA:"🇸🇦",URU:"🇺🇾",FRA:"🇫🇷",SEN:"🇸🇳",IRQ:"🇮🇶",NOR:"🇳🇴",ARG:"🇦🇷",ALG:"🇩🇿",AUT:"🇦🇹",JOR:"🇯🇴",POR:"🇵🇹",COD:"🇨🇩",UZB:"🇺🇿",COL:"🇨🇴",ENG:"uk",CRO:"🇭🇷",GHA:"🇬🇭",PAN:"🇵🇦"};
 function fl(c){return FLAGS[c]||"🏳️"}
 function pt(s){const[n,c]=s.split("|");return{name:n,code:c,flag:fl(c)}}
 
@@ -563,25 +536,23 @@ function generateImage(){
           }
         }
 
-        // 旗帜：ENG/SCO用SVG手绘，其余用emoji
+        // emoji旗帜（作为文字）
+        ctx.font=`12px serif`;
         ctx.textAlign='left';
         ctx.fillStyle='#1a1a1a';
-        if(!drawFlagOnCanvas(ctx,t.code,x+5,ty+10,13)){
-          ctx.font=`13px serif`;
-          ctx.fillText(t.flag,x+5,ty+10);
-        }
+        const flagText=t.flag.length<=2?t.flag:'🏳';
+        ctx.fillText(flagText,x+6,ty+10);
 
         // 队名
-        const nameStartX=x+(CANVAS_FLAGS[t.code]?20:24);
         ctx.font=isWin?`600 11px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`:`400 11px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
         ctx.fillStyle=isWin?'#005f8e':'#1a1a1a';
         ctx.textAlign='left';
-        const maxW=cellW-nameStartX+(x)-6;
+        const maxW=cellW-42;
         let name=t.name;
         // 截断过长队名
         while(ctx.measureText(name).width>maxW&&name.length>1)name=name.slice(0,-1);
         if(name!==t.name)name=name.slice(0,-1)+'…';
-        ctx.fillText(name,nameStartX,ty+10);
+        ctx.fillText(name,x+24,ty+10);
 
         // 胜者勾
         if(isWin){
@@ -610,21 +581,7 @@ function generateImage(){
     ctx.font=`600 13px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
     ctx.fillStyle='#a07800';
     ctx.textAlign='center';
-    // 冠军旗帜：ENG/SCO用SVG手绘，其余emoji
-    const championText=`🏆 冠军：`;
-    const nameText=` ${fw.name}`;
-    const textBeforeFlag=ctx.measureText(championText).width;
-    const nameW=ctx.measureText(nameText).width;
-    const totalTextW=textBeforeFlag+(CANVAS_FLAGS[fw.code]?16:ctx.measureText(fw.flag).width)+nameW;
-    let tx=W/2-totalTextW/2;
-    ctx.textAlign='left';
-    ctx.fillText(championText,tx,by+24);
-    tx+=textBeforeFlag;
-    if(!drawFlagOnCanvas(ctx,fw.code,tx,by+24,14)){
-      ctx.font=`14px serif`;ctx.fillText(fw.flag,tx,by+24);tx+=ctx.measureText(fw.flag).width;
-      ctx.font=`600 13px -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`;
-    } else { tx+=16; }
-    ctx.fillText(nameText,tx,by+24);
+    ctx.fillText(`🏆 冠军：${fw.flag} ${fw.name}`,W/2,by+24);
   }
 
   // 水印
